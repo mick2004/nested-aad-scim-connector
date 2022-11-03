@@ -1,0 +1,9 @@
+[azure]
+clientId =
+clientSecret =
+tenantId =
+authTenant =
+graphUserScopes =
+[databricks]
+dbbaseUrl=
+dbscimToken=
