@@ -2,7 +2,7 @@ import sys
 
 import configparser
 
-from DatabricksClient import DatabricksClient
+from model.DatabricksClient import DatabricksClient
 
 def main():
     # Load settings

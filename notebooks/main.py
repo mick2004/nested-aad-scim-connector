@@ -4,8 +4,8 @@ import sys
 
 import configparser
 
-from DatabricksClient import DatabricksClient
-from Graph import Graph
+from model.DatabricksClient import DatabricksClient
+from model.Graph import Graph
 from collections import defaultdict
 
 
@@ -31,7 +31,7 @@ def main():
 
     # Load settings
     config = configparser.ConfigParser()
-    config.read(['config.cfg', 'config.dev.cfg'])
+    config.read(['../config/config.cfg', 'config.dev.cfg'])
     azure_settings = config['azure']
     db_settings = config['databricks']
 
