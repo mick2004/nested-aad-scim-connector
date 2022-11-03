@@ -86,27 +86,6 @@ def extractFromGroup(graph: Graph,gid, displayName):
             extractFromGroup(graph,gm["id"], displayName + ":" +gm["displayName"])
 
 
-def list_users(graph: Graph):
-    users_page = graph.get_users()
-
-    for user in users_page['value']:
-        print('User:', user['displayName'])
-        print('  ID:', user['id'])
-        print('  Email:', user['mail'])
-
-    # If @odata.nextLink is present
-    more_available = '@odata.nextLink' in users_page
-
-    # TODO: loop and populate additional users
-    print('\nMore users available?', more_available, '\n')
-
-
-
-
-
-def display_access_token(graph: Graph):
-    token = graph.get_user_token()
-    print('User token:', token, '\n')
 
 
 if __name__ == '__main__':
