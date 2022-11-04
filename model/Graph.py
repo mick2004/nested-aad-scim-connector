@@ -85,6 +85,19 @@ class Graph:
         users_response = self.app_client.get(request_url)
         return users_response.json()
 
+    def extractFromGroup(self,graph, gid, displayName,groupUsermap,userGroupmap):
+        gms = graph.get_groupmembers(gid)
+        for gm in gms['value']:
+            if gm["@odata.type"] == "#microsoft.graph.user":
+                for gp in str(displayName).split(":"):
+                    groupUsermap[gp].add((gm["displayName"], gm["userPrincipalName"]))
+                    userGroupmap[(gm["displayName"], gm["userPrincipalName"])].add(gp)
+
+            elif gm["@odata.type"] == "#microsoft.graph.group":
+                graph.extractFromGroup(graph, gm["id"], displayName + ":" + gm["displayName"],groupUsermap,userGroupmap)
+
+        return groupUsermap, userGroupmap
+
 
 
 

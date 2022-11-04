@@ -52,10 +52,10 @@ def main():
         print("Group is "+group["displayName"])
         for arg in sys.argv[1:]:
             if not arg.startswith("--") and arg.casefold() == group["displayName"].casefold():
-                extractFromGroup(graph, group["id"], group["displayName"]);
+                groupUsermapU, userGroupmapU=graph.extractFromGroup(graph, group["id"], group["displayName"], groupUsermap, userGroupmap);
 
 
-    for u in userGroupmap.keys():
+    for u in userGroupmapU.keys():
         if not dryrun:
             exists = False
 
@@ -68,22 +68,13 @@ def main():
 
     dbusers = dbclient.get_DBUsers()
 
-    for u in groupUsermap.keys():
+    for u in groupUsermapU.keys():
         print("2")
-        dbclient.createdbgroup(u,groupUsermap.get(u),dbusers)
+        dbclient.createdbgroup(u,groupUsermapU.get(u),dbusers)
 
 
 
-def extractFromGroup(graph: Graph,gid, displayName):
-    gms = graph.get_groupmembers(gid)
-    for gm in gms['value']:
-        if gm["@odata.type"] == "#microsoft.graph.user":
-            for gp in str(displayName).split(":"):
-                groupUsermap[gp].add((gm["displayName"] , gm["userPrincipalName"]))
-                userGroupmap[(gm["displayName"],gm["userPrincipalName"])].add(gp)
 
-        elif gm["@odata.type"] == "#microsoft.graph.group":
-            extractFromGroup(graph,gm["id"], displayName + ":" +gm["displayName"])
 
 
 
