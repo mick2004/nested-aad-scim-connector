@@ -76,7 +76,7 @@ class Graph:
 
         endpoint = '/groups'
         # Only request specific properties
-        select = 'displayName,id,userPrincipalName,email'
+        select = 'displayName,id,userPrincipalName,mail'
 
         # Sort by display name
         order_by = 'displayName'
@@ -90,8 +90,8 @@ class Graph:
         for gm in gms['value']:
             if gm["@odata.type"] == "#microsoft.graph.user":
                 for gp in str(displayName).split(":"):
-                    groupUsermap[gp].add((gm["displayName"], gm["email"]))
-                    userGroupmap[(gm["displayName"], gm["email"])].add(gp)
+                    groupUsermap[gp].add((gm["displayName"], gm["mail"]))
+                    userGroupmap[(gm["displayName"], gm["mail"])].add(gp)
 
             elif gm["@odata.type"] == "#microsoft.graph.group":
                 graph.extractFromGroup(graph, gm["id"], displayName + ":" + gm["displayName"],groupUsermap,userGroupmap)

@@ -25,7 +25,7 @@ def main(group):
     toplevelgroup = ""
 
     for arg in sys.argv[1:]:
-        if arg.casefold() == "--dryRun":
+        if arg.casefold() == "--dryrun":
             dryrun = True;
         else:
             if toplevelgroup == "":
@@ -34,7 +34,8 @@ def main(group):
                 print("Only one group supported")
                 return
 
-    toplevelgroup = group
+    if toplevelgroup == "":
+        toplevelgroup = group
     # Load settings
     config = configparser.ConfigParser()
     config.read(['../config/config.cfg', 'config.dev.cfg'])
@@ -64,18 +65,20 @@ def main(group):
 
     print("4.Hierarchy analysed,going to create users and groups")
 
+    if dryrun:
+        print("THIS IS DRY RUN.NO CHANGES WILL TAKE PLACE ON DATABRICKS")
+
     if colInitialised:
         for u in userGroupmapU.keys():
-            if not dryrun:
-                exists = False
 
-                for udb in dbusers["Resources"]:
-                    if u[0].casefold() == udb["displayName"].casefold():
-                        exists = True;
+            exists = False
 
-                if not exists:
-                    dbclient.createdbuser(u)
-                    print("User created in databricks : " + u)
+            for udb in dbusers["Resources"]:
+                if u[0].casefold() == udb["displayName"].casefold():
+                    exists = True;
+
+            if not exists:
+                dbclient.createdbuser(u,dryrun)
 
         dbusers = dbclient.get_DBUsers()
         dbGroups = dbclient.get_DBGroups()
@@ -87,12 +90,11 @@ def main(group):
                 if u.casefold() == dbg["displayName"].casefold():
                     exists = True;
                     # compare and add remove the members as needed
-                    dbclient.patchdbgroup(dbg["id"], groupUsermap.get(u), dbg, dbusers)
+                    dbclient.patchdbgroup(dbg["id"], groupUsermap.get(u), dbg, dbusers,dryrun)
 
             if not exists:
-                dbclient.createdbgroup(u, groupUsermap.get(u), dbusers)
-                print("Group and User assignment created in databricks : " + u[0])
+                dbclient.createdbgroup(u, groupUsermap.get(u), dbusers,dryrun)
 
 
 if __name__ == '__main__':
-    main()
+    main("test")
