@@ -8,9 +8,11 @@ from collections import defaultdict
 
 groupUsermap = defaultdict(set)
 userGroupmap = defaultdict(set)
+groupUsermapU = defaultdict(set)
+userGroupmapU = defaultdict(set)
 
 
-def main():
+def main(group):
     dryrun = False;
 
     print('Number of arguments:', len(sys.argv[1:]), 'arguments.')
@@ -32,7 +34,7 @@ def main():
                 print("Only one group supported")
                 return
 
-
+    toplevelgroup = group
     # Load settings
     config = configparser.ConfigParser()
     config.read(['../config/config.cfg', 'config.dev.cfg'])
@@ -51,43 +53,45 @@ def main():
     print("2.All top level AAD groups Read")
     print("3.Top level group requested is " + toplevelgroup)
 
+    colInitialised = False;
     for group in groups_page['value']:
         print("Group is " + group["displayName"])
         for arg in sys.argv[1:]:
-            if not arg.startswith("--") and arg.casefold() == group["displayName"].casefold():
+            if not arg.startswith("--") and toplevelgroup.casefold() == group["displayName"].casefold():
                 groupUsermapU, userGroupmapU = graph.extractFromGroup(graph, group["id"], group["displayName"],
                                                                       groupUsermap, userGroupmap);
+                colInitialised = True
 
     print("4.Hierarchy analysed,going to create users and groups")
 
-    for u in userGroupmapU.keys():
-        if not dryrun:
-            exists = False
+    if colInitialised:
+        for u in userGroupmapU.keys():
+            if not dryrun:
+                exists = False
 
-            for udb in dbusers["Resources"]:
-                if u[0].casefold() == udb["displayName"].casefold():
+                for udb in dbusers["Resources"]:
+                    if u[0].casefold() == udb["displayName"].casefold():
+                        exists = True;
+
+                if not exists:
+                    dbclient.createdbuser(u)
+                    print("User created in databricks : " + u)
+
+        dbusers = dbclient.get_DBUsers()
+        dbGroups = dbclient.get_DBGroups()
+
+
+        for u in groupUsermapU.keys():
+            exists = False
+            for dbg in dbGroups["Resources"]:
+                if u.casefold() == dbg["displayName"].casefold():
                     exists = True;
+                    # compare and add remove the members as needed
+                    dbclient.patchdbgroup(dbg["id"], groupUsermap.get(u), dbg, dbusers)
 
             if not exists:
-
-                dbclient.createdbuser(u)
-                print("User created in databricks : " + u)
-
-    dbusers = dbclient.get_DBUsers()
-    dbGroups = dbclient.get_DBGroups()
-
-    for u in groupUsermapU.keys():
-        exists = False
-        for dbg in dbGroups["Resources"]:
-            if u.casefold() == dbg["displayName"].casefold():
-                exists = True;
-                #compare and add remove the members as needed
-                dbclient.patchdbgroup(dbg["id"], groupUsermap.get(u), dbg,dbusers)
-
-
-        if not exists:
-            dbclient.createdbgroup(u, groupUsermap.get(u), dbusers)
-            print("Group and User assignment created in databricks : " + u)
+                dbclient.createdbgroup(u, groupUsermap.get(u), dbusers)
+                print("Group and User assignment created in databricks : " + u[0])
 
 
 if __name__ == '__main__':
