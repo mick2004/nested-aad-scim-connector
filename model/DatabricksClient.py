@@ -79,7 +79,7 @@ class DatabricksClient:
             print("Group Created.Request was " + ujson)
             print("Response was :" + response.text)
         else:
-            print("Group to be created.Request should be " + ujson)
+            print("Group to be created :" + group)
 
     '''
     Add or remove users in Databricks group
