@@ -63,7 +63,7 @@ Follow the steps below to do same:
 
 ## Running the app
 
-### From Within Databricks:
+### As Notebook from your Databricks workspace:
 
 * Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
 * In your repo ,rename config.cfg.template to config.cfg and fill the properties
@@ -71,3 +71,10 @@ Follow the steps below to do same:
 * Open the FlattenAndSyncNestedGroups notebook
 * Specify Top level group of AAD to sync from 
 * Change txtIsDryRun to False if you want to actually create/update users and groups
+
+### As Sthandalon Python app
+* Clone this repo
+* Rename config.cfg.template to config.cfg and fill the properties
+* Run FlattenAndSyncNestedGroups.py from PythonEndpoint. 
+* pass --dryrun to have a dryrun
+* pass top level group as a parameter to python program Ex: ../PythonEndpoint/FlattenAndSyncNestedGroups..py parent
