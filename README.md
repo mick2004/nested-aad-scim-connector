@@ -39,21 +39,25 @@ Follow the steps below to do same:
 
 8. In the Application menu blade, click on the Certificates & secrets, in the Client secrets section, choose New client secret:
 
-  Markup : *a.Type a key description (for instance app secret)
+  * Type a key description (for instance app secret)
   
-  *b.Select a key duration as per your security concerns
+  * Select a key duration as per your security concerns
   
-  *c.The generated key value will be displayed when you click the Add button. Copy the generated value for use in the steps later.
+  * The generated key value will be displayed when you click the Add button. Copy the generated value for use in the steps later.
   
-  *d.You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means,   so make sure to note it from the Azure portal before navigating to any other screen or blade.
+  * You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means,   so make sure to note it from the Azure portal before navigating to any other screen or blade.
   
 9.In the Application menu blade, click on the API permissions in the left to open the page where we add access to the Apis that your application needs.
 
-  a.Click the Add a permission button and then,
-  b.Ensure that the Microsoft APIs tab is selected
-  c.In the Commonly used Microsoft APIs section, click on Microsoft Graph
-  d.In the Application permissions section, ensure that the **right permissions are checked: User.Read.All**
-  e.Select the Add permissions button at the bottom.
+  * Click the Add a permission button and then,
+  
+  * Ensure that the Microsoft APIs tab is selected
+  
+  * In the Commonly used Microsoft APIs section, click on Microsoft Graph
+  
+  * In the Application permissions section, ensure that the **right permissions are checked: User.Read.All**
+  
+  * Select the Add permissions button at the bottom.
   
 10.At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. To get around this problem, we'd let the tenant administrator consent on behalf of all users in the tenant. Click the Grant admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be the tenant admin to be able to carry out this operation.
 
