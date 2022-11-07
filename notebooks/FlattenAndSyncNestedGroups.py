@@ -81,8 +81,8 @@ dbclient: DatabricksClient = DatabricksClient(db_settings)
 
 # COMMAND ----------
 
-dbusers = dbclient.get_DBUsers()
-dbGroups = dbclient.get_DBGroups()
+dbusers = dbclient.get_dbusers()
+dbGroups = dbclient.get_dbgroups()
 print("1.All Databricks Users and Groups Read")
 
 # COMMAND ----------
@@ -112,7 +112,7 @@ colInitialised = False;
 for group in groups_page['value']:
     
     if toplevelgroup.casefold() == group["displayName"].casefold():
-          groupUsermapU, userGroupmapU = graph.extractFromGroup(graph, group["id"], group["displayName"],
+          groupUsermapU, userGroupmapU = graph.extract_from_group(graph, group["id"], group["displayName"],
                                                                   groupUsermap, userGroupmap);
           colInitialised = True
 
@@ -169,8 +169,8 @@ if colInitialised:
 
 # COMMAND ----------
 
-dbusers = dbclient.get_DBUsers()
-dbGroups = dbclient.get_DBGroups()
+dbusers = dbclient.get_dbusers()
+dbGroups = dbclient.get_dbgroups()
 
 
 for u in groupUsermapU.keys():
@@ -179,10 +179,10 @@ for u in groupUsermapU.keys():
         if u.casefold() == dbg["displayName"].casefold():
             exists = True;
             # compare and add remove the members as needed
-            dbclient.patchdbgroup(dbg["id"], groupUsermap.get(u), dbg, dbusers,dryrun)
+            dbclient.patch_dbgroup(dbg["id"], groupUsermap.get(u), dbg, dbusers, dryrun)
 
     if not exists:
-        dbclient.createdbgroup(u, groupUsermap.get(u), dbusers,dryrun)
+        dbclient.create_dbgroup(u, groupUsermap.get(u), dbusers, dryrun)
 
 
 

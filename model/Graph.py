@@ -1,9 +1,11 @@
-import json
-import requests
-import json
 from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential, ClientSecretCredential
 from msgraph.core import GraphClient
+
+'''
+A wrapper for Graph to interact with Graph API's
+https://learn.microsoft.com/en-us/graph/overview
+'''
 
 
 class Graph:
@@ -21,12 +23,9 @@ class Graph:
         self.device_code_credential = DeviceCodeCredential(client_id, tenant_id=tenant_id)
         self.user_client = GraphClient(credential=self.device_code_credential)
 
-    def get_user_token(self):
-        graph_scopes = self.settings['graphUserScopes']
-        access_token = self.device_code_credential.get_token(graph_scopes)
-        return access_token.token
-
-
+    '''
+    Initialises the client
+    '''
 
     def ensure_graph_for_app_only_auth(self):
         if not hasattr(self, 'client_credential'):
@@ -40,21 +39,9 @@ class Graph:
             self.app_client = GraphClient(credential=self.client_credential,
                                           scopes=['https://graph.microsoft.com/.default'])
 
-    def get_users(self):
-        self.ensure_graph_for_app_only_auth()
-
-        endpoint = '/users'
-        # Only request specific properties
-        select = 'displayName,id,mail'
-        # Get at most 25 results
-        top = 100
-        # Sort by display name
-        order_by = 'displayName'
-        request_url = f'{endpoint}?$select={select}&$top={top}&$orderBy={order_by}'
-
-        users_response = self.app_client.get(request_url)
-        return users_response.json()
-
+    '''
+    Get all the groups from AAD
+    '''
     def get_groups(self):
         self.ensure_graph_for_app_only_auth()
 
@@ -70,6 +57,9 @@ class Graph:
         users_response = self.app_client.get(request_url)
         return users_response.json()
 
+    '''
+    Get all the group members from the group
+    '''
     def get_groupmembers(self, gid):
         self.ensure_graph_for_app_only_auth()
 
@@ -84,19 +74,21 @@ class Graph:
         users_response = self.app_client.get(request_url)
         return users_response.json()
 
-    def extractFromGroup(self,graph, gid, displayName,groupUsermap,userGroupmap):
+    '''
+    Extract the user and group mapping .
+    This method makes recursive call to get all the group and member relationships even within nested group
+    '''
+    @staticmethod
+    def extract_from_group(graph, gid, displayname, groupusermap, usergroupmap):
         gms = graph.get_groupmembers(gid)
         for gm in gms['value']:
             if gm["@odata.type"] == "#microsoft.graph.user":
-                for gp in str(displayName).split(":"):
-                    groupUsermap[gp].add((gm["displayName"], gm["mail"]))
-                    userGroupmap[(gm["displayName"], gm["mail"])].add(gp)
+                for gp in str(displayname).split(":"):
+                    groupusermap[gp].add((gm["displayName"], gm["mail"]))
+                    usergroupmap[(gm["displayName"], gm["mail"])].add(gp)
 
             elif gm["@odata.type"] == "#microsoft.graph.group":
-                graph.extractFromGroup(graph, gm["id"], displayName + ":" + gm["displayName"],groupUsermap,userGroupmap)
+                graph.extract_from_group(graph, gm["id"], displayname + ":" + gm["displayName"], groupusermap,
+                                         usergroupmap)
 
-        return groupUsermap, userGroupmap
-
-
-
-
+        return groupusermap, usergroupmap

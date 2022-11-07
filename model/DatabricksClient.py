@@ -1,6 +1,11 @@
 import json
 import requests
 
+'''
+Databricks client to interact with Databricks SCIM API's
+https://docs.databricks.com/dev-tools/api/latest/scim/account-scim.html
+'''
+
 
 class DatabricksClient:
     dbbaseUrl: str
@@ -11,7 +16,10 @@ class DatabricksClient:
         self.dbbaseUrl = self.settings['dbbaseUrl']
         self.dbscimToken = self.settings['dbscimToken']
 
-    def get_DBUsers(self):
+    '''
+    Get all the users on Databricks
+    '''
+    def get_dbusers(self):
 
         api_url = self.dbbaseUrl + "/Users"
 
@@ -19,7 +27,10 @@ class DatabricksClient:
         response = requests.get(api_url, headers=my_headers).text
         return json.loads(response)
 
-    def createdbuser(self, user, dryrun):
+    '''
+    Create Databricks User
+    '''
+    def create_dbuser(self, user, dryrun):
         api_url = self.dbbaseUrl + "/Users"
         u = {
             "schemas": [
@@ -35,10 +46,14 @@ class DatabricksClient:
         if not dryrun:
             response = requests.post(api_url, data=json.dumps(u), headers=my_headers)
             print("User created " + str(user[0]))
+            print("Response was :" + response.text)
         else:
             print("User to be created " + str(user[0]))
 
-    def createdbgroup(self, group, members, dbus, dryrun):
+    '''
+    Create group in Databricks
+    '''
+    def create_dbgroup(self, group, members, dbus, dryrun):
         api_url = self.dbbaseUrl + "/Groups"
         u = {
             "displayName": group,
@@ -56,18 +71,20 @@ class DatabricksClient:
                     mem.append(obj)
 
         gdata = json.loads(json.dumps(u))
-        # for member in members:
-        #     gdata["members"].append(dict("value",member[0]))
         gdata["members"] = mem
         ujson = json.dumps(gdata)
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         if not dryrun:
             response = requests.post(api_url, data=ujson, headers=my_headers)
             print("Group Created.Request was " + ujson)
+            print("Response was :" + response.text)
         else:
             print("Group to be created.Request should be " + ujson)
 
-    def patchdbgroup(self, gid, members, dbg, dbus, dryrun):
+    '''
+    Add or remove users in Databricks group
+    '''
+    def patch_dbgroup(self, gid, members, dbg, dbus, dryrun):
         api_url = self.dbbaseUrl + "/Groups/" + gid
         u = {
             "schemas": [
@@ -84,7 +101,7 @@ class DatabricksClient:
             if "members" in dbg:
                 for dbmember in dbg["members"]:
                     if member[0].casefold() == dbmember["display"].casefold():
-                        exists = True;
+                        exists = True
             if not exists:
                 toadd.append(member)
 
@@ -93,9 +110,9 @@ class DatabricksClient:
                 exists = False
                 for member in members:
                     if member[0].casefold() == dbmember["display"].casefold():
-                        exists = True;
+                        exists = True
                 if not exists:
-                    toremove.append(member)
+                    toremove.append(dbmember)
 
         ops = []
 
@@ -111,7 +128,6 @@ class DatabricksClient:
                         obj["value"] = dbu["id"]
                         mem.append(obj)
 
-            # add
             dictmem = {"members": mem}
             dictsub = {'op': "add", 'path': "members", 'value': dictmem}
             ops.append(dictsub)
@@ -135,25 +151,37 @@ class DatabricksClient:
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         if not dryrun:
             response = requests.patch(api_url, data=ujson, headers=my_headers)
-            print("Group Existed but membership updated. Request was :"+ ujson)
-        else:
-            print("Group Exists but membership need to be updated for :"+dbg["displayName"])
+            print("Group Existed but membership updated. Request was :" + ujson)
+            print("Response was :" + response.text)
 
-    def get_DBGroups(self):
+        else:
+            print("Group Exists but membership need to be updated for :" + dbg["displayName"])
+
+    '''
+    Get all Databricks groups
+    '''
+    def get_dbgroups(self):
         api_url = self.dbbaseUrl + "/Groups"
 
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         response = requests.get(api_url, headers=my_headers).text
         return json.loads(response)
 
-    def deleteUser(self, uid):
+    '''
+    Delete a Databricks User
+    '''
+    def delete_user(self, uid):
         api_url = self.dbbaseUrl + "/Users/" + uid
 
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         response = requests.delete(api_url, headers=my_headers).text
         return response
 
-    def deleteGroup(self, uid):
+    '''
+    Delete a Databricks group
+    '''
+
+    def delete_group(self, uid):
         api_url = self.dbbaseUrl + "/Groups/" + uid
 
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}

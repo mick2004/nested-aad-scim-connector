@@ -77,4 +77,7 @@ Follow the steps below to do same:
 * Rename config.cfg.template to config.cfg and fill the properties
 * Run FlattenAndSyncNestedGroups.py from PythonEndpoint. 
 * pass --dryrun to have a dryrun
-* pass top level group as a parameter to python program Ex: ../PythonEndpoint/FlattenAndSyncNestedGroups..py parent
+* pass top level group as a parameter to python program Ex: python PythonEndpoint/FlattenAndSyncNestedGroups.py parent
+Dependency required:
+* pip install msgraph-core
+* pip install azure-identity
