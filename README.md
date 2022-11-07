@@ -72,7 +72,7 @@ Follow the steps below to do same:
 * Specify Top level group of AAD to sync from 
 * Change txtIsDryRun to False if you want to actually create/update users and groups
 
-### As Sthandalon Python app
+### As Standalon Python app
 * Clone this repo
 * Rename config.cfg.template to config.cfg and fill the properties
 * Run FlattenAndSyncNestedGroups.py from PythonEndpoint. 
