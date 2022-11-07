@@ -3,15 +3,19 @@ This utility provides ability to sync Users and Groups from AAD to Databricks. T
 
 **Note**: This code is for demonstration purpose only and should not be used as is in Production
 
-**How to run the code:**
+
 
 **Steps before running code:**
 
-Open a browser and navigate to the Azure Active Directory admin center and login using a personal account (aka: Microsoft Account) or Work or School Account.
+You will need to register an application in Azure Active Directory to enable user [authentication](https://learn.microsoft.com/en-us/graph/auth-v2-user)
 
-Select Azure Active Directory in the left-hand navigation, then select App registrations under Manage.
+Follow the steps below to do same:
 
-A screenshot of the App registrations 
+1.Open a browser and navigate to the Azure Active Directory admin center and login using a personal account (aka: Microsoft Account) or Work or School Account.
+
+2.Select Azure Active Directory in the left-hand navigation, then select App registrations under Manage.
+
+![image](https://user-images.githubusercontent.com/2042132/200214332-0b686c2d-41df-4b27-863d-c34be789f228.png)
 
 Select New registration. Enter a name for your application, for example, Python Graph Tutorial.
 
