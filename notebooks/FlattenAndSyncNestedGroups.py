@@ -153,10 +153,10 @@ if colInitialised:
 
         for udb in dbusers["Resources"]:
             if u[0].casefold() == udb["displayName"].casefold():
-                exists = True;
+                exists = True
 
         if not exists:
-            dbclient.createdbuser(u,dryrun)
+            dbclient.create_dbuser(u,dryrun)
 
 # COMMAND ----------
 
