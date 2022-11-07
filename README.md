@@ -65,5 +65,9 @@ Follow the steps below to do same:
 
 ### From Within Databricks:
 
-1.Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
-2.
+* Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
+* In your repo ,rename config.cfg.template to config.cfg and fill the properties
+**Note:** For Prod workloads,its recommended to use Databricks Secrets
+* Open the FlattenAndSyncNestedGroups notebook
+* Specify Top level group of AAD to sync from 
+* Change txtIsDryRun to False if you want to actually create/update users and groups
