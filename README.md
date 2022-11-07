@@ -39,7 +39,7 @@ Follow the steps below to do same:
 
 8. In the Application menu blade, click on the Certificates & secrets, in the Client secrets section, choose New client secret:
 
-  *a.Type a key description (for instance app secret)
+  Markup : *a.Type a key description (for instance app secret)
   
   *b.Select a key duration as per your security concerns
   
