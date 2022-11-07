@@ -39,13 +39,13 @@ Follow the steps below to do same:
 
 8. In the Application menu blade, click on the Certificates & secrets, in the Client secrets section, choose New client secret:
 
-  a.Type a key description (for instance app secret)
+  *a.Type a key description (for instance app secret)
   
-  b.Select a key duration as per your security concerns
+  *b.Select a key duration as per your security concerns
   
-  c.The generated key value will be displayed when you click the Add button. Copy the generated value for use in the steps later.
+  *c.The generated key value will be displayed when you click the Add button. Copy the generated value for use in the steps later.
   
-  d.You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means,   so make sure to note it from the Azure portal before navigating to any other screen or blade.
+  *d.You'll need this key later in your code's configuration files. This key value will not be displayed again, and is not retrievable by any other means,   so make sure to note it from the Azure portal before navigating to any other screen or blade.
   
 9.In the Application menu blade, click on the API permissions in the left to open the page where we add access to the Apis that your application needs.
 
