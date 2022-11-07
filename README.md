@@ -5,7 +5,7 @@ This utility provides ability to sync Users and Groups from AAD to Databricks. T
 
 
 
-##**Steps before running code:**
+## **Steps before running code:**
 
 **Register an application in Azure ADD with ReadAll permissions**
 
@@ -61,9 +61,9 @@ Follow the steps below to do same:
   
 10.At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. To get around this problem, we'd let the tenant administrator consent on behalf of all users in the tenant. Click the Grant admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be the tenant admin to be able to carry out this operation.
 
-##Running the app
+## Running the app
 
-###From Within Databricks:
+### From Within Databricks:
 
 1.Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
 2.
