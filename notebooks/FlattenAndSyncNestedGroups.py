@@ -5,8 +5,8 @@ dbutils.widgets.dropdown("txtIsDryRun", "True",['True','False'])
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Before running code,go to repo and create a new file config.cfg with relevant attributes << link >>
-# MAGIC For prod use recommended to store these in Databricks Vault << link >>
+# MAGIC Before running code,go to repo and create a new file config.cfg with relevant attributes https://github.com/mick2004/AzureAADDatabricksConnector/blob/main/README.md
+# MAGIC For prod use recommended to store these in Databricks Vault https://learn.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes
 
 # COMMAND ----------
 
