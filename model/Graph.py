@@ -17,10 +17,9 @@ class Graph:
         self.settings = config
         client_id = self.settings['clientId']
         tenant_id = self.settings['authTenant']
-        graph_scopes = self.settings['graphUserScopes'].split(' ')
 
         self.device_code_credential = DeviceCodeCredential(client_id, tenant_id=tenant_id)
-        self.user_client = GraphClient(credential=self.device_code_credential, scopes=graph_scopes)
+        self.user_client = GraphClient(credential=self.device_code_credential)
 
     def get_user_token(self):
         graph_scopes = self.settings['graphUserScopes']
