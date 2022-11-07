@@ -1,5 +1,5 @@
 # AzureAADDatabricksConnector
-This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync nested groups and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
+This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
 **Note**: This code is for demonstration purpose only and should not be used as is in Production
 
@@ -31,7 +31,10 @@ Follow the steps below to do same:
 
 ![image](https://user-images.githubusercontent.com/2042132/200214869-afa9efa2-f076-4892-8746-cdeb7a26f7d4.png)
 
-7.Select **Authentication **under Manage. Locate the** Advanced settings** section and change the** Allow public client flows** toggle to Yes, then choose Save.
+7.Select **Authentication **under Manage. Locate the** Advanced settings** section and change the **Allow public client **flows** toggle to Yes, then choose Save.
+
+![image](https://user-images.githubusercontent.com/2042132/200215091-28962ad9-0767-4914-ad87-37839f24f0a1.png)
+
 
 From Within Databricks:
 
