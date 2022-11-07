@@ -13,27 +13,25 @@ Follow the steps below to do same:
 
 1.Open a browser and navigate to the Azure Active Directory admin center and login using a personal account (aka: Microsoft Account) or Work or School Account.
 
-2.Select Azure Active Directory in the left-hand navigation, then select App registrations under Manage.
+2.Select **Azure Active Directory **in the left-hand navigation, then select **App registrations** under** Manage**.
 
 ![image](https://user-images.githubusercontent.com/2042132/200214332-0b686c2d-41df-4b27-863d-c34be789f228.png)
 
-Select New registration. Enter a name for your application, for example, Python Graph Tutorial.
+3.Select **New registration**. Enter a name for your application, for example, CustomAADConnector.
 
-Set Supported account types as desired. The options are:
+4.Set **Supported account types** as desired. 
 
-Option	Who can sign in?
-Accounts in this organizational directory only	Only users in your Microsoft 365 organization
-Accounts in any organizational directory	Users in any Microsoft 365 organization (work or school accounts)
-Accounts in any organizational directory ... and personal Microsoft accounts	Users in any Microsoft 365 organization (work or school accounts) and personal Microsoft accounts
-Leave Redirect URI empty.
+5.Leave **Redirect URI** empty.
 
-Select Register. On the application's Overview page, copy the value of the Application (client) ID and save it, you will need it in the next step. If you chose Accounts in this organizational directory only for Supported account types, also copy the Directory (tenant) ID and save it.
+6.Select **Register**. On the application's **Overview page**, copy the value of the** Application (client) ID** and save it, you will need it in the next step. If you chose Accounts in this organizational directory only for Supported account types, also copy the Directory (tenant) ID and save it.
 
-A screenshot of the application ID of the new app registration
 
-Select Authentication under Manage. Locate the Advanced settings section and change the Allow public client flows toggle to Yes, then choose Save.
 
-A screenshot of the Allow public client flows toggle
+
+
+![image](https://user-images.githubusercontent.com/2042132/200214869-afa9efa2-f076-4892-8746-cdeb7a26f7d4.png)
+
+7.Select **Authentication **under Manage. Locate the** Advanced settings** section and change the** Allow public client flows** toggle to Yes, then choose Save.
 
 From Within Databricks:
 
