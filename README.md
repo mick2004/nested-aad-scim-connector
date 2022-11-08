@@ -1,4 +1,4 @@
-# AzureAADDatabricksConnector
+#  nested-aad-scim-connector
 This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
 **Note**: This code is for demonstration purpose only and should not be used as is in Production
