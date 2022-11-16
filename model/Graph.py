@@ -1,3 +1,4 @@
+from collections import defaultdict
 from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential, ClientSecretCredential
 from msgraph.core import GraphClient
@@ -6,6 +7,11 @@ from msgraph.core import GraphClient
 A wrapper for Graph to interact with Graph API's
 https://learn.microsoft.com/en-us/graph/overview
 '''
+
+
+class HashableDict(dict):
+    def __hash__(self):
+        return hash(frozenset(self.items()))
 
 
 class Graph:
@@ -42,6 +48,7 @@ class Graph:
     '''
     Get all the groups from AAD
     '''
+
     def get_groups(self):
         self.ensure_graph_for_app_only_auth()
 
@@ -60,12 +67,13 @@ class Graph:
     '''
     Get all the group members from the group
     '''
+
     def get_groupmembers(self, gid):
         self.ensure_graph_for_app_only_auth()
 
         endpoint = '/groups'
         # Only request specific properties
-        select = 'displayName,id,userPrincipalName,mail'
+        select = 'displayName,id,userPrincipalName'
 
         # Sort by display name
         order_by = 'displayName'
@@ -78,17 +86,38 @@ class Graph:
     Extract the user and group mapping .
     This method makes recursive call to get all the group and member relationships even within nested group
     '''
+
     @staticmethod
     def extract_from_group(graph, gid, displayname, groupusermap, usergroupmap):
         gms = graph.get_groupmembers(gid)
         for gm in gms['value']:
             if gm["@odata.type"] == "#microsoft.graph.user":
                 for gp in str(displayname).split(":"):
-                    groupusermap[gp].add((gm["displayName"], gm["mail"]))
-                    usergroupmap[(gm["displayName"], gm["mail"])].add(gp)
+                    groupusermap[gp].add((gm["displayName"], gm["userPrincipalName"]))
+                    usergroupmap[(gm["displayName"], gm["userPrincipalName"])].add(gp)
 
             elif gm["@odata.type"] == "#microsoft.graph.group":
                 graph.extract_from_group(graph, gm["id"], displayname + ":" + gm["displayName"], groupusermap,
                                          usergroupmap)
 
         return groupusermap, usergroupmap
+
+    @staticmethod
+    def extract_children_from_group(graph, gid, displayname, distinct_groups,
+                                    distinct_users, groupgp):
+
+        gms = graph.get_groupmembers(gid)
+        for gm in gms['value']:
+            if gm["@odata.type"] == "#microsoft.graph.user":
+
+                groupgp[displayname].add(
+                    HashableDict({'type': 'user', 'data': (gm["displayName"], gm["userPrincipalName"])}))
+                distinct_users.add((gm["displayName"], gm["userPrincipalName"]))
+            elif gm["@odata.type"] == "#microsoft.graph.group":
+
+                groupgp[displayname].add(HashableDict({'type': 'group', 'data': (gm["displayName"])}))
+                distinct_groups.add(gm["displayName"])
+                graph.extract_children_from_group(graph, gm["id"], gm["displayName"], distinct_groups,
+                                                  distinct_users, groupgp)
+
+        return distinct_groups, distinct_users, groupgp

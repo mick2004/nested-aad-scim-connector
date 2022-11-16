@@ -19,8 +19,8 @@ Entry point of the application
 Can provide --dryrun to do a dryrun
 Can provide a top level group as program argument as top level group
 Ex:
-python PythonEndpoint/FlattenAndSyncNestedGroups.py parent
-python PythonEndpoint/FlattenAndSyncNestedGroups.py parent --dryrun
+python PythonEndpoint/SyncNestedGroups.py parent
+python PythonEndpoint/SyncNestedGroups.py parent --dryrun
 '''
 
 
