@@ -68,16 +68,16 @@ Follow the steps below to do same:
 * Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
 * In your repo ,rename config.cfg.template to config.cfg and fill the properties
 **Note:** For Prod workloads,its recommended to use Databricks Secrets
-* Open the FlattenAndSyncNestedGroups notebook
+* Open the SyncNestedGroups notebook
 * Specify Top level group of AAD to sync from 
 * Change txtIsDryRun to False if you want to actually create/update users and groups
 
 ### As Standalon Python app:
 * Clone this repo
 * Rename config.cfg.template to config.cfg and fill the properties
-* Run FlattenAndSyncNestedGroups.py from PythonEndpoint. 
+* Run SyncNestedGroups.py from PythonEndpoint. 
 * pass --dryrun to have a dryrun
-* pass top level group as a parameter to python program Ex: python PythonEndpoint/FlattenAndSyncNestedGroups.py parent
+* pass top level group as a parameter to python program Ex: python PythonEndpoint/SyncNestedGroups.py parent
 Dependency required:
 * pip install msgraph-core
 * pip install azure-identity
