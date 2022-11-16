@@ -26,7 +26,6 @@ class SyncNestedGroups:
     '''
 
     def main(self, group):
-        global groupUsermapU
         dryrun = False;
 
         print('Number of arguments:', len(sys.argv[1:]), 'arguments.')
