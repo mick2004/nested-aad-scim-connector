@@ -28,12 +28,10 @@ dbutils.widgets.dropdown("txtIsDryRun", "True",['True','False'])
 
 # COMMAND ----------
 
-import sys
-
 import configparser
 
-from model.DatabricksClient import DatabricksClient
-from model.Graph import Graph
+from databricks.model.DatabricksClient import DatabricksClient
+from databricks.model.Graph import Graph
 from collections import defaultdict
 
 groupgp = defaultdict(set)

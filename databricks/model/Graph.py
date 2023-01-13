@@ -107,6 +107,7 @@ class Graph:
                                     distinct_users, groupgp):
 
         gms = graph.get_groupmembers(gid)
+        distinct_groups.add(displayname)
         for gm in gms['value']:
             if gm["@odata.type"] == "#microsoft.graph.user":
 
