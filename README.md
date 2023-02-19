@@ -7,7 +7,7 @@ It also provides simple install via pip
 
 
 
-## **Steps before running code:**
+## **Steps for running code:**
 
 i)**Register an application in Azure ADD with ReadAll permissions**
 
