@@ -3,7 +3,6 @@ This utility provides ability to sync Users and Groups from AAD to Databricks. T
 
 Using the code is as simple as below few commands :
 
-* Install utility via pip
 
 ````
 pip install nestedaaddb
