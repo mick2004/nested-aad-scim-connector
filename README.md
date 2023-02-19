@@ -7,12 +7,6 @@ Using the code is as simple as below few commands :
 
 ````
 pip install nestedaaddb
-````
-
-* Copy the config.cfg.template ,populate details and rename to config.cfg
-* Run as below:
-
-````
 from nestedaaddb.nested_groups import SyncNestedGroups
 sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
