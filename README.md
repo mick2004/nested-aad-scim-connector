@@ -1,11 +1,26 @@
 #  nested-aad-scim-connector
 This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
-It also provides simple install via pip
+Using the code is as simple as below few commands :
+
+* Install utility via pip
+
+````
+pip install nestedaaddb
+````
+
+* Copy the config.cfg.template ,populate details and rename to config.cfg
+* Run as below:
+
+````
+from nestedaaddb.nested_groups import SyncNestedGroups
+sn = SyncNestedGroups()
+sn.loadConfig(<<Path of config.cfg>>")
+sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 
 **Note**: This code is for demonstration purpose only and should not be used as is in Production
 
-
+### Details
 
 ## **Steps for running code:**
 
@@ -81,7 +96,7 @@ pip install nestedaaddb
 from nestedaaddb.nested_groups import SyncNestedGroups
 sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
-sn.sync("Parent",True)
+sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 ````
 ### OR 
 ### As Notebook from your Databricks workspace(OPTIONAL):
