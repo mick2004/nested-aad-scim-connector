@@ -83,8 +83,8 @@ sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
 sn.sync("Parent",True)
 ````
-
-### As Notebook from your Databricks workspace:
+### OR 
+### As Notebook from your Databricks workspace(OPTIONAL):
 
 * Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
 * In your repo ,rename config.cfg.template to config.cfg and fill the properties
