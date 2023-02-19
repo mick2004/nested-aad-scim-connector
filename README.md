@@ -90,17 +90,6 @@ sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
 sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 ````
-### OR 
-### As Notebook from your Databricks workspace(OPTIONAL):
 
-* Go to your workspace and clone this repo.Detailed steps [here](https://learn.microsoft.com/en-us/azure/databricks//repos/git-operations-with-repos) 
-* In your repo ,rename config.cfg.template to config.cfg and fill the properties
-**Note:** For Prod workloads,its recommended to use Databricks Secrets
-* Open the SyncNestedGroups notebook
-* Specify Top level group of AAD to sync from and if its a dry run
-
-![image](https://user-images.githubusercontent.com/2042132/202103771-325c316d-0317-46f2-b3f1-6e1021d0dd0d.png)
-
-* Change txtIsDryRun to False if you want to actually create/update users and groups
 
 
