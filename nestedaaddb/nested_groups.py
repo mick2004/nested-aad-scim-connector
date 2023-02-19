@@ -1,9 +1,8 @@
 import sys
 
 import configparser
-
-from databricks.model.DatabricksClient import DatabricksClient
-from databricks.model.Graph import Graph
+from nestedaaddb.graph_client import Graph
+from nestedaaddb.databricks_client import DatabricksClient
 from collections import defaultdict
 
 
@@ -16,70 +15,38 @@ class SyncNestedGroups:
     distinct_users = set()
     distinct_groups = set()
 
+    config = configparser.ConfigParser()
+    graph: Graph
+    dbclient: DatabricksClient
+
+    def loadConfig(self, path):
+        # print(self)
+        # print(path)
+        self.config.read(path)
+        azure_settings = self.config['azure']
+        db_settings = self.config['databricks']
+
+        self.graph: Graph = Graph(azure_settings)
+        self.dbclient: DatabricksClient = DatabricksClient(db_settings)
+
     '''
-    Entry point of the application
-    Can provide --dryrun to do a dryrun
-    Can provide a top level group as program argument as top level group
-    Ex:
-    python PythonEndpoint/SyncNestedGroups.py parent
-    python PythonEndpoint/SyncNestedGroups.py parent --dryrun
+    
     '''
 
-    def main(self, group):
-        dryrun = False;
-
-        print('Number of arguments:', len(sys.argv[1:]), 'arguments.')
-        print('Argument List:', str(sys.argv[1:]))
-
-        '''
-        Validation for program arguments
-        '''
-        if len(sys.argv[1:]) > 2:
-            print("only 2 arguments supported")
-            return
-
-        toplevelgroup = ""
-
-        for arg in sys.argv[1:]:
-            if arg.casefold() == "--dryrun":
-                dryrun = True;
-            else:
-                if toplevelgroup == "":
-                    toplevelgroup = arg;
-                else:
-                    print("Only one group supported")
-                    return
-
-        '''
-        set top level group
-        Priority is for program argument and if not provided then checks method argument
-        '''
-        if toplevelgroup == "":
-            toplevelgroup = group
-
-        '''
-        Initialise clients
-        '''
-        config = configparser.ConfigParser()
-        config.read(['../config/config.cfg', 'config.dev.cfg'])
-        azure_settings = config['azure']
-        db_settings = config['databricks']
-
-        graph: Graph = Graph(azure_settings)
-        dbclient: DatabricksClient = DatabricksClient(db_settings)
+    def sync(self, toplevelgroup, dryrun=False):
 
         '''
         Read All Databricks users and groups
         '''
-        dbusers = dbclient.get_dbusers()
-        dbgroups = dbclient.get_dbgroups()
+        dbusers = self.dbclient.get_dbusers()
+        dbgroups = self.dbclient.get_dbgroups()
 
         print("1.All Databricks Users Read")
 
         '''
         Read all groups from AAD
         '''
-        groups_page = graph.get_groups()
+        groups_page = self.graph.get_groups()
 
         print("2.All AAD groups Read done")
 
@@ -108,7 +75,7 @@ class SyncNestedGroups:
                 if len(sys.argv[1:]) > 0:
                     for arg in sys.argv[1:]:
                         if not arg.startswith("--") and top.casefold() == group["displayName"].casefold():
-                            distinct_groupsU, distinct_usersU, groupgpU = graph.extract_children_from_group(graph,
+                            distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
                                                                                                             group["id"],
                                                                                                             group[
                                                                                                                 "displayName"],
@@ -117,7 +84,7 @@ class SyncNestedGroups:
                                                                                                             self.groupgp);
                             colInitialised = True
                 elif top != "" and top.casefold() == group["displayName"].casefold():
-                    distinct_groupsU, distinct_usersU, groupgpU = graph.extract_children_from_group(graph,
+                    distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
                                                                                                     group["id"],
                                                                                                     group[
                                                                                                         "displayName"],
@@ -145,7 +112,7 @@ class SyncNestedGroups:
                             exists = True;
 
                     if not exists:
-                        dbclient.create_dbuser(u, dryrun)
+                        self.dbclient.create_dbuser(u, dryrun)
 
                 for u in distinct_groupsU:
                     exists = False
@@ -154,13 +121,13 @@ class SyncNestedGroups:
                             exists = True
 
                     if not exists:
-                        dbclient.create_blank_dbgroup(u, dryrun)
+                        self.dbclient.create_blank_dbgroup(u, dryrun)
 
                 '''
                 Reloading users from Databricks as we need id of new users as well added in last step
                 '''
-                dbusers = dbclient.get_dbusers()
-                dbgroups = dbclient.get_dbgroups()
+                dbusers = self.dbclient.get_dbusers()
+                dbgroups = self.dbclient.get_dbgroups()
 
                 '''
                 Create groups or update membership of groups i.e. add/remove users from groups
@@ -171,10 +138,6 @@ class SyncNestedGroups:
                         if u.casefold() == dbg["displayName"].casefold():
                             exists = True
                             # compare and add remove the members as needed
-                            dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
+                            self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
 
         print("All Operation completed !")
-
-
-if __name__ == '__main__':
-    SyncNestedGroups().main("")
