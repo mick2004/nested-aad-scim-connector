@@ -9,7 +9,8 @@ It also provides simple install via pip
 
 ## **Steps for running code:**
 
-i)**Register an application in Azure ADD with ReadAll permissions**
+## ** Step i) **
+**Register an application in Azure ADD with ReadAll permissions**
 
 You will need to register an application in Azure Active Directory to enable user [authentication](https://learn.microsoft.com/en-us/graph/auth-v2-user)
 
