@@ -1,13 +1,15 @@
 #  nested-aad-scim-connector
 This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
+It also provides simple install via pip
+
 **Note**: This code is for demonstration purpose only and should not be used as is in Production
 
 
 
 ## **Steps before running code:**
 
-**Register an application in Azure ADD with ReadAll permissions**
+i)**Register an application in Azure ADD with ReadAll permissions**
 
 You will need to register an application in Azure Active Directory to enable user [authentication](https://learn.microsoft.com/en-us/graph/auth-v2-user)
 
@@ -61,7 +63,20 @@ Follow the steps below to do same:
   
 10.At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. To get around this problem, we'd let the tenant administrator consent on behalf of all users in the tenant. Click the Grant admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be the tenant admin to be able to carry out this operation.
 
-## Running the app
+ii)## Running the app
+
+### As Standalon Python app:
+* Install utility via pip
+
+pip install nestedaaddb
+
+* Copy the config.cfg.template ,populate details and rename to config.cfg
+* Run as below:
+
+from nestedaaddb.nested_groups import SyncNestedGroups
+sn = SyncNestedGroups()
+sn.loadConfig(<<Path of config.cfg>>")
+sn.sync("Parent",True)
 
 ### As Notebook from your Databricks workspace:
 
@@ -75,12 +90,4 @@ Follow the steps below to do same:
 
 * Change txtIsDryRun to False if you want to actually create/update users and groups
 
-### As Standalon Python app:
-* Clone this repo
-* Rename config.cfg.template to config.cfg and fill the properties
-* Run SyncNestedGroups.py from PythonEndpoint. 
-* pass --dryrun to have a dryrun
-* pass top level group as a parameter to python program Ex: python PythonEndpoint/SyncNestedGroups.py parent
-Dependency required:
-* pip install msgraph-core
-* pip install azure-identity
+
