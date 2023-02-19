@@ -9,7 +9,7 @@ It also provides simple install via pip
 
 ## **Steps for running code:**
 
-## ** Step i) **
+##  Step (i) 
 **Register an application in Azure ADD with ReadAll permissions**
 
 You will need to register an application in Azure Active Directory to enable user [authentication](https://learn.microsoft.com/en-us/graph/auth-v2-user)
@@ -64,7 +64,8 @@ Follow the steps below to do same:
   
 10.At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. To get around this problem, we'd let the tenant administrator consent on behalf of all users in the tenant. Click the Grant admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be the tenant admin to be able to carry out this operation.
 
-ii)## Running the app
+##  Step (ii) 
+## Running the app
 
 ### As Standalon Python app:
 * Install utility via pip
