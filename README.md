@@ -68,15 +68,19 @@ ii)## Running the app
 ### As Standalon Python app:
 * Install utility via pip
 
+````
 pip install nestedaaddb
+````
 
 * Copy the config.cfg.template ,populate details and rename to config.cfg
 * Run as below:
 
+````
 from nestedaaddb.nested_groups import SyncNestedGroups
 sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
 sn.sync("Parent",True)
+````
 
 ### As Notebook from your Databricks workspace:
 
