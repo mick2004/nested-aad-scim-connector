@@ -12,6 +12,8 @@ config/config.cfg
 test.py
 DONOTCHECKIN
 DONOTCHECKIN/*
+testSync.py
+
 
 # Distribution / packaging
 .Python
