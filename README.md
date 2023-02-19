@@ -19,7 +19,7 @@ sn.loadConfig(<<Path of config.cfg>>")
 sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 ````
 
-### Details
+## **Details**
 
 ## **Steps for running code:**
 
