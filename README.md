@@ -18,7 +18,6 @@ sn = SyncNestedGroups()
 sn.loadConfig(<<Path of config.cfg>>")
 sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 ````
-**Note**: This code is for demonstration purpose only and should not be used as is in Production
 
 ### Details
 
