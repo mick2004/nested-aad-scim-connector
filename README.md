@@ -71,7 +71,16 @@ Follow the steps below to do same:
   
 10.At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. To get around this problem, we'd let the tenant administrator consent on behalf of all users in the tenant. Click the Grant admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be the tenant admin to be able to carry out this operation.
 
-##  Step (ii) 
+
+##  Step (i) 
+**Populate config.cfg files with Databricks Settings**
+Extract the SCIM Token and ACCOUNT SCIM URL Details: https://learn.microsoft.com/en-us/azure/databricks/administration-guide/users-groups/scim/aad#step-1-configure-azure-databricks
+
+![Screenshot 2023-04-24 at 8 17 17 pm](https://user-images.githubusercontent.com/110456615/233968828-ac9ecee3-e996-45c5-8854-e31dfadd5d87.png)
+
+
+
+##  Step (iii) 
 ## Running the app
 
 ### As Standalon Python app:
