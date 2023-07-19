@@ -128,6 +128,7 @@ class DatabricksClient:
         if len(toremove) > 0:
             mem = []
             for member in toremove:
+                obj = dict()
                 obj["value"] = member["value"]
                 mem.append(obj)
 
