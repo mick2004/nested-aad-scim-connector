@@ -77,8 +77,9 @@ class DatabricksClient:
                         If group we only store name
                         check if user or group exists
                         '''
-                        if (member["type"] == "user" and member["data"][0].casefold() == dbmember["display"].casefold())\
-                                or (member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold()):
+                        if (member["type"] == "user" and member["data"][0].casefold() == dbmember["display"].casefold()) \
+                                or (member["type"] == "group" and member["data"].casefold() == dbmember[
+                            "display"].casefold()):
                             exists = True
                             break
                 if not exists:
@@ -89,7 +90,8 @@ class DatabricksClient:
                 exists = False
                 for member in members:
                     if (member["type"] == "user" and member["data"][0].casefold() == dbmember["display"].casefold()) \
-                            or (member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold()):
+                            or (
+                            member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold()):
                         exists = True
                         break
                 if not exists:
@@ -114,10 +116,10 @@ class DatabricksClient:
                             break
                 # or if it is a group
                 elif member["type"] == "group":
-                    for dbg in dbgroups["Resources"]:
-                        if dbg["displayName"].casefold() == member["data"].casefold():
+                    for dbgg in dbgroups["Resources"]:
+                        if dbgg["displayName"].casefold() == member["data"].casefold():
                             obj = dict()
-                            obj["value"] = dbg["id"]
+                            obj["value"] = dbgg["id"]
                             mem.append(obj)
                             break
 
@@ -128,6 +130,7 @@ class DatabricksClient:
         if len(toremove) > 0:
             mem = []
             for member in toremove:
+                obj = dict()
                 obj["value"] = member["value"]
                 mem.append(obj)
 
@@ -145,7 +148,9 @@ class DatabricksClient:
             print("Response was :" + response.text)
 
         else:
-            print("Group Exists but membership need to be updated for :" + dbg["displayName"])
+            print("Group Exists but membership need to be updated for :"
+                  + dbg[
+                      "displayName"] + ". Request details-> data " + ujson + ",EndPoint :" + api_url)
 
     '''
     Get all Databricks groups
