@@ -30,9 +30,8 @@ class SyncNestedGroups:
         self.dbclient: DatabricksClient = DatabricksClient(db_settings)
 
     '''
-    
+    Peforms sync of Users and Groups
     '''
-
     def sync(self, toplevelgroup, dryrun=False):
 
         '''
@@ -52,92 +51,74 @@ class SyncNestedGroups:
 
         print("3.Top level group requested is " + toplevelgroup)
 
+
         '''
         Indicates whether user and group collection are loaded successfully
         '''
-        for top in toplevelgroup.split(","):
+        colInitialised = False
 
-            self.distinct_groups.clear()
-            self.distinct_users.clear()
-            self.groupgp.clear()
+        '''
+        Iterate through each group in AAD and map members corresponding to it including nested child group members
+        '''
+        for group in groups_page['value']:
+            print("Group is " + group["displayName"])
 
-            colInitialised = False
+            if toplevelgroup != "" and toplevelgroup.casefold() == group["displayName"].casefold():
+                distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
+                                                                                                     group["id"],
+                                                                                                     group[
+                                                                                                         "displayName"],
+                                                                                                     self.distinct_groups,
+                                                                                                     self.distinct_users,
+                                                                                                     self.groupgp);
+                colInitialised = True
+
+        print("4.Hierarchy analysed,going to create users and groups")
+
+        if dryrun:
+            print("THIS IS DRY RUN.NO CHANGES WILL TAKE PLACE ON DATABRICKS")
+
+        if colInitialised:
 
             '''
-            Iterate through each group in AAD and map members corresponding to it including nested child group members
+            Create Users and groups in Databricks as required
             '''
-            for group in groups_page['value']:
-                print("Group is " + group["displayName"])
+            for u in distinct_usersU:
 
-                '''
-                If this is invoked via cli with program arguments
-                '''
-                if len(sys.argv[1:]) > 0:
-                    for arg in sys.argv[1:]:
-                        if not arg.startswith("--") and top.casefold() == group["displayName"].casefold():
-                            distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
-                                                                                                            group["id"],
-                                                                                                            group[
-                                                                                                                "displayName"],
-                                                                                                            self.distinct_groups,
-                                                                                                            self.distinct_users,
-                                                                                                            self.groupgp);
-                            colInitialised = True
-                elif top != "" and top.casefold() == group["displayName"].casefold():
-                    distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
-                                                                                                    group["id"],
-                                                                                                    group[
-                                                                                                        "displayName"],
-                                                                                                    self.distinct_groups,
-                                                                                                    self.distinct_users,
-                                                                                                    self.groupgp);
-                    colInitialised = True
+                exists = False
 
-            print("4.Hierarchy analysed,going to create users and groups")
+                for udb in dbusers["Resources"]:
+                    if u[0].casefold() == udb["displayName"].casefold():
+                        exists = True;
 
-            if dryrun:
-                print("THIS IS DRY RUN.NO CHANGES WILL TAKE PLACE ON DATABRICKS")
+                if not exists:
+                    self.dbclient.create_dbuser(u, dryrun)
 
-            if colInitialised:
+            for u in distinct_groupsU:
+                exists = False
+                for dbg in dbgroups["Resources"]:
+                    if u.casefold() == dbg["displayName"].casefold():
+                        exists = True
 
-                '''
-                Create Users and groups in Databricks as required
-                '''
-                for u in distinct_usersU:
+                if not exists:
+                    self.dbclient.create_blank_dbgroup(u, dryrun)
 
-                    exists = False
+            '''
+            Reloading users from Databricks as we need id of new users as well added in last step
+            '''
+            dbusers = self.dbclient.get_dbusers()
+            dbgroups = self.dbclient.get_dbgroups()
 
-                    for udb in dbusers["Resources"]:
-                        if u[0].casefold() == udb["displayName"].casefold():
-                            exists = True;
-
-                    if not exists:
-                        self.dbclient.create_dbuser(u, dryrun)
-
-                for u in distinct_groupsU:
-                    exists = False
-                    for dbg in dbgroups["Resources"]:
-                        if u.casefold() == dbg["displayName"].casefold():
-                            exists = True
-
-                    if not exists:
-                        self.dbclient.create_blank_dbgroup(u, dryrun)
-
-                '''
-                Reloading users from Databricks as we need id of new users as well added in last step
-                '''
-                dbusers = self.dbclient.get_dbusers()
-                dbgroups = self.dbclient.get_dbgroups()
-
-                '''
-                Create groups or update membership of groups i.e. add/remove users from groups
-                '''
-                for u in distinct_groupsU:
-                    exists = False
-                    for dbg in dbgroups["Resources"]:
-                        if u.casefold() == dbg["displayName"].casefold():
-                            exists = True
-                            # compare and add remove the members as needed
-                            self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
-
+            '''
+            Create groups or update membership of groups i.e. add/remove users from groups
+            '''
+            for u in distinct_groupsU:
+                exists = False
+                for dbg in dbgroups["Resources"]:
+                    if u.casefold() == dbg["displayName"].casefold():
+                        exists = True
+                        # compare and add remove the members as needed
+                        self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
         print("All Operation completed !")
+
+
