@@ -100,7 +100,6 @@ sn.loadConfig(<<Path of config.cfg>>")
 sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 ````
 
-
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
