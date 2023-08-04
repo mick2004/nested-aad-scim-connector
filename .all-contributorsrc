@@ -15,6 +15,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "AbhiDatabricks",
+      "name": "Abhishek Pratap Singh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/110456615?v=4",
+      "profile": "https://github.com/AbhiDatabricks",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
