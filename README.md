@@ -111,7 +111,7 @@ sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jaina15"><img src="https://avatars.githubusercontent.com/u/26425486?v=4?s=100" width="100px;" alt="Shubham Jain"/><br /><sub><b>Shubham Jain</b></sub></a><br /><a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=jaina15" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jaina15"><img src="https://avatars.githubusercontent.com/u/26425486?v=4?s=100" width="100px;" alt="Shubham Jain"/><br /><sub><b>Shubham Jain</b></sub></a><br /><a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=jaina15" title="Code">💻</a> <a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=jaina15" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
