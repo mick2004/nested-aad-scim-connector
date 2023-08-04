@@ -2,7 +2,8 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/:period/:nestedaaddb">
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/nestedaaddb">
+
 
 This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
