@@ -1,7 +1,8 @@
 #  nested-aad-scim-connector
 
-<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/nestedaaddb?label=PyPi%20Downloads&link=https%3A%2F%2Fpypistats.org%2Fpackages%2Fnestedaaddb">
 
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/nestedaaddb?label=PyPi%20Downloads&link=https%3A%2F%2Fpypistats.org%2Fpackages%2Fnestedaaddb">
+<img alt="PyPI" src="https://img.shields.io/pypi/v/nestedaaddb?link=https%3A%2F%2Fpypi.org%2Fproject%2Fnestedaaddb%2F">
 
 
 
