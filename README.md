@@ -17,6 +17,11 @@ Install
 ````
 pip install nestedaaddb
 ````
+Configure
+
+Copy the config.cfg.template from here (https://github.com/mick2004/nested-aad-scim-connector/blob/main/config.cfg.template) ,populate details and rename to config.cfg
+
+
 Usage 
 ````
 from nestedaaddb.nested_groups import SyncNestedGroups
