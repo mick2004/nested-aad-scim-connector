@@ -1,6 +1,6 @@
 #  nested-aad-scim-connector
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 This utility provides ability to sync Users and Groups from AAD to Databricks. This application allows to sync [**nested groups**](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/how-to-manage-groups#add-or-remove-a-group-from-another-group) and users as well which is not supported in "[Azure Databricks SCIM Provisioning Connector application](https://docs.databricks.com/administration-guide/users-groups/scim/aad.html)"
 
@@ -111,7 +111,10 @@ sn.sync(<<Top level Group>>,<<Is Dry Run>>)
 <table>
   <tbody>
     <tr>
+
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jaina15"><img src="https://avatars.githubusercontent.com/u/26425486?v=4?s=100" width="100px;" alt="Shubham Jain"/><br /><sub><b>Shubham Jain</b></sub></a><br /><a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=jaina15" title="Code">💻</a> <a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=jaina15" title="Tests">⚠️</a></td>
+  <td align="center" valign="top" width="14.28%"><a href="https://github.com/AbhiDatabricks"><img src="https://avatars.githubusercontent.com/u/110456615?v=4?s=100" width="100px;" alt="Abhishek Pratap Singh"/><br /><sub><b>Abhishek Pratap Singh</b></sub></a><br /><a href="#infra-AbhiDatabricks" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=AbhiDatabricks" title="Tests">⚠️</a> <a href="https://github.com/mick2004/nested-aad-scim-connector/commits?author=AbhiDatabricks" title="Code">💻</a></td>
+
     </tr>
   </tbody>
 </table>
