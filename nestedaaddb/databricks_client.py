@@ -60,7 +60,7 @@ class DatabricksClient:
         api_url = self.dbbaseUrl + "/Groups/" + gid
         u = {
             "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:Group"
+                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
             ]
         }
 
@@ -109,7 +109,8 @@ class DatabricksClient:
                 # check if it's a user
                 if member["type"] == "user":
                     for dbu in dbus["Resources"]:
-                        if dbu["displayName"].casefold() == member["data"][0].casefold() and dbu["userName"].casefold() == member["data"][1].casefold():
+                        if dbu["displayName"].casefold() == member["data"][0].casefold() and dbu[
+                            "userName"].casefold() == member["data"][1].casefold():
                             obj = dict()
                             obj["value"] = dbu["id"]
                             mem.append(obj)
@@ -124,19 +125,14 @@ class DatabricksClient:
                             break
 
             dictmem = {"members": mem}
-            dictsub = {'op': "add", 'path': "members", 'value': dictmem}
+            dictsub = {'op': "add", 'value': dictmem}
             ops.append(dictsub)
 
         if len(toremove) > 0:
-            mem = []
-            for member in toremove:
-                obj = dict()
-                obj["value"] = member["value"]
-                mem.append(obj)
 
-            dictmem = {"members": mem}
-            dictsub = {'op': "remove", 'path': "members", 'value': dictmem}
-            ops.append(dictsub)
+            for member in toremove:
+                dictsub = {'op': "remove", 'path': "members[value eq \"" + member["value"] + "\""}
+                ops.append(dictsub)
 
         gdata = json.loads(json.dumps(u))
         gdata["Operations"] = ops
