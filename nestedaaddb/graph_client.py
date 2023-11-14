@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential, ClientSecretCredential
@@ -45,9 +46,46 @@ class Graph:
             self.app_client = GraphClient(credential=self.client_credential,
                                           scopes=['https://graph.microsoft.com/.default'])
 
+    def getGroupByName(self, group_name):
+        self.ensure_graph_for_app_only_auth()
+
+        endpoint = '/groups'
+        filter_query = f"displayName eq '{group_name}'"
+        select = 'displayName,id'
+
+        request_url = f'{endpoint}?$filter={filter_query}&$select={select}'
+
+        group_response = self.app_client.get(request_url)
+        return group_response.json()
+
     '''
-    Get all the groups from AAD
+    Create groups in AAD
     '''
+
+    def create_group(self, name):
+        self.ensure_graph_for_app_only_auth()
+
+        request_body = {
+            "description": "Self help community for lib23",
+            "displayName": name,
+            "groupTypes": [
+                "Unified"
+            ],
+            "mailEnabled": False,
+            "mailNickname": "lib23",
+            "securityEnabled": False
+        }
+
+        request_url = '/groups'
+
+        group_response = self.app_client.post(request_url,
+                                              data=json.dumps(request_body),
+                                              headers={'Content-Type': 'application/json'})
+        return group_response.json()
+
+    '''
+       Get all the groups from AAD
+       '''
 
     def get_groups(self):
         self.ensure_graph_for_app_only_auth()
@@ -55,11 +93,10 @@ class Graph:
         endpoint = '/groups'
         # Only request specific properties
         select = 'displayName,id'
-        # Get at most 25 results
-        top = 100
+
         # Sort by display name
         order_by = 'displayName'
-        request_url = f'{endpoint}?$select={select}&$top={top}&$orderBy={order_by}'
+        request_url = f'{endpoint}?$select={select}&$orderBy={order_by}'
 
         users_response = self.app_client.get(request_url)
         return users_response.json()

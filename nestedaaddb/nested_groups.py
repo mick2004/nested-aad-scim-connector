@@ -29,9 +29,13 @@ class SyncNestedGroups:
         self.graph: Graph = Graph(azure_settings)
         self.dbclient: DatabricksClient = DatabricksClient(db_settings)
 
+    def createGroup(self, name):
+        return self.graph.create_group(name)
+
     '''
     Peforms sync of Users and Groups
     '''
+
     def sync(self, toplevelgroup, dryrun=False):
 
         '''
@@ -42,15 +46,15 @@ class SyncNestedGroups:
 
         print("1.All Databricks Users Read")
 
-        '''
-        Read all groups from AAD
-        '''
-        groups_page = self.graph.get_groups()
+        print("2.Top level group requested is " + toplevelgroup)
 
-        print("2.All AAD groups Read done")
+        group = self.graph.getGroupByName(toplevelgroup)
 
-        print("3.Top level group requested is " + toplevelgroup)
+        if len(group["value"]) == 0:
+            print("Top level group not found,exiting...")
+            return
 
+        print("3.Top level group retrieved from AAD")
 
         '''
         Indicates whether user and group collection are loaded successfully
@@ -60,18 +64,16 @@ class SyncNestedGroups:
         '''
         Iterate through each group in AAD and map members corresponding to it including nested child group members
         '''
-        for group in groups_page['value']:
-            print("Group is " + group["displayName"])
-
-            if toplevelgroup != "" and toplevelgroup.casefold() == group["displayName"].casefold():
-                distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
-                                                                                                     group["id"],
-                                                                                                     group[
-                                                                                                         "displayName"],
-                                                                                                     self.distinct_groups,
-                                                                                                     self.distinct_users,
-                                                                                                     self.groupgp);
-                colInitialised = True
+        group = group['value'][0]
+        if toplevelgroup != "" and toplevelgroup.casefold() == group["displayName"].casefold():
+            distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
+                                                                                                 group["id"],
+                                                                                                 group[
+                                                                                                     "displayName"],
+                                                                                                 self.distinct_groups,
+                                                                                                 self.distinct_users,
+                                                                                                 self.groupgp);
+            colInitialised = True
 
         print("4.Hierarchy analysed,going to create users and groups")
 
@@ -88,7 +90,8 @@ class SyncNestedGroups:
                 exists = False
 
                 for udb in dbusers["Resources"]:
-                    if u[0].casefold() == udb["displayName"].casefold():
+                    if u[0].casefold() == udb["displayName"].casefold() and u[1].casefold() == udb[
+                        "userName"].casefold():
                         exists = True;
 
                 if not exists:
@@ -120,5 +123,3 @@ class SyncNestedGroups:
                         # compare and add remove the members as needed
                         self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
         print("All Operation completed !")
-
-
