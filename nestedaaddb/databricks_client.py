@@ -69,6 +69,7 @@ class DatabricksClient:
 
         if members is not None:
             for member in members:
+                print("-----1m"+member)
                 exists = False
                 if "members" in dbg:
                     for dbmember in dbg["members"]:
@@ -77,12 +78,16 @@ class DatabricksClient:
                         If group we only store name
                         check if user or group exists
                         '''
+
+                        print("1.dbm is "+dbmember)
                         if (member["type"] == "user" and member["data"][0].casefold() == dbmember["display"].casefold()) \
                                 or (member["type"] == "group" and member["data"].casefold() == dbmember[
                             "display"].casefold()):
                             exists = True
+                            print("-----2m" + member)
                             break
                 if not exists:
+                    print("-----3m" + member)
                     toadd.append(member)
 
         if "members" in dbg:
@@ -98,6 +103,12 @@ class DatabricksClient:
                     toremove.append(dbmember)
 
         ops = []
+
+        print("Inside patchop")
+        print("Existing group members :"+dbg["members"])
+        print("Final list should be :"+members)
+        print("To add "+ toadd)
+        print("To remove " + toremove)
 
         if len(toadd) == 0 and len(toremove) == 0:
             return
