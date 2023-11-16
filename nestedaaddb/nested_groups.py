@@ -89,6 +89,10 @@ class SyncNestedGroups:
 
                 exists = False
 
+                print("----0m----users identified to be present in groups selected")
+
+                print(u)
+
                 for udb in dbusers["Resources"]:
                     if u[0].casefold() == udb.get("displayName", "").casefold() and u[1].casefold() == udb[
                         "userName"].casefold():
