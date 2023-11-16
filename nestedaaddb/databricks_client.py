@@ -109,7 +109,7 @@ class DatabricksClient:
                 # check if it's a user
                 if member["type"] == "user":
                     for dbu in dbus["Resources"]:
-                        if dbu["displayName"].casefold() == member["data"][0].casefold() and dbu[
+                        if dbu.get("displayName", "").casefold() == member["data"][0].casefold() and dbu[
                             "userName"].casefold() == member["data"][1].casefold():
                             obj = dict()
                             obj["value"] = dbu["id"]
@@ -118,7 +118,7 @@ class DatabricksClient:
                 # or if it is a group
                 elif member["type"] == "group":
                     for dbgg in dbgroups["Resources"]:
-                        if dbgg["displayName"].casefold() == member["data"].casefold():
+                        if dbgg.get("displayName", "").casefold() == member["data"].casefold():
                             obj = dict()
                             obj["value"] = dbgg["id"]
                             mem.append(obj)
@@ -145,8 +145,7 @@ class DatabricksClient:
 
         else:
             print("Group Exists but membership need to be updated for :"
-                  + dbg[
-                      "displayName"] + ". Request details-> data " + ujson + ",EndPoint :" + api_url)
+                  + dbg.get("displayName", "NoNameExist") + ". Request details-> data " + ujson + ",EndPoint :" + api_url)
 
     '''
     Get all Databricks groups

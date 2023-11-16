@@ -65,7 +65,7 @@ class SyncNestedGroups:
         Iterate through each group in AAD and map members corresponding to it including nested child group members
         '''
         group = group['value'][0]
-        if toplevelgroup != "" and toplevelgroup.casefold() == group["displayName"].casefold():
+        if toplevelgroup != "" and toplevelgroup.casefold() == group.get("displayName", "").casefold():
             distinct_groupsU, distinct_usersU, groupgpU = self.graph.extract_children_from_group(self.graph,
                                                                                                  group["id"],
                                                                                                  group[
@@ -90,7 +90,7 @@ class SyncNestedGroups:
                 exists = False
 
                 for udb in dbusers["Resources"]:
-                    if u[0].casefold() == udb["displayName"].casefold() and u[1].casefold() == udb[
+                    if u[0].casefold() == udb.get("displayName", "").casefold() and u[1].casefold() == udb[
                         "userName"].casefold():
                         exists = True;
 
@@ -100,7 +100,7 @@ class SyncNestedGroups:
             for u in distinct_groupsU:
                 exists = False
                 for dbg in dbgroups["Resources"]:
-                    if u.casefold() == dbg["displayName"].casefold():
+                    if u.casefold() == dbg.get("displayName", "").casefold():
                         exists = True
 
                 if not exists:
@@ -118,7 +118,7 @@ class SyncNestedGroups:
             for u in distinct_groupsU:
                 exists = False
                 for dbg in dbgroups["Resources"]:
-                    if u.casefold() == dbg["displayName"].casefold():
+                    if u.casefold() == dbg.get("displayName", "").casefold():
                         exists = True
                         # compare and add remove the members as needed
                         self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
