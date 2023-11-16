@@ -125,6 +125,9 @@ class DatabricksClient:
             mem = []
             for member in toadd:
 
+                print("----15m-----Going to add user in group-----")
+                print(member)
+
                 # check if it's a user
                 if member["type"] == "user":
                     for dbu in dbus["Resources"]:
