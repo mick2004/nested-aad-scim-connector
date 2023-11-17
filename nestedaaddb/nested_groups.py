@@ -99,7 +99,7 @@ class SyncNestedGroups:
 
                 print(u)
 
-                for udb in dbusers["Resources"]:
+                for udb in dbusers:
                     if u[1].casefold() == udb["userName"].casefold():
                         exists = True;
 

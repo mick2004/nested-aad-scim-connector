@@ -22,11 +22,40 @@ class DatabricksClient:
 
     def get_dbusers(self):
 
-        api_url = self.dbbaseUrl + "/Users"
+        # api_url = self.dbbaseUrl + "/Users"
+        #
+        # my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
+        # response = requests.get(api_url, headers=my_headers).text
+        # return json.loads(response)
+        all_users = []
 
-        my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
-        response = requests.get(api_url, headers=my_headers).text
-        return json.loads(response)
+        api_url = self.dbbaseUrl + "/Users"
+        start_index=1
+        count=10000
+
+        while True:
+            my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
+            params = {
+                'startIndex': start_index,
+                'count': count
+            }
+
+
+
+            response = requests.get(api_url, headers=my_headers, params=params).text
+            users_data = json.loads(response)
+
+            # Extract users from the current page and add them to the list
+            if 'Resources' in users_data:
+                all_users.extend(users_data['Resources'])
+
+            if 'totalResults' in users_data and len(all_users) >= users_data['totalResults']:
+                # If we have retrieved all users, break out of the loop
+                break
+
+            start_index += count  # Increment the startIndex for the next request
+
+        return all_users
 
     '''
     Create Databricks User
@@ -138,7 +167,7 @@ class DatabricksClient:
 
                 # check if it's a user
                 if member["type"] == "user":
-                    for dbu in dbus["Resources"]:
+                    for dbu in dbus:
                         if dbu["userName"].casefold() == member["data"][1].casefold():
                             obj = dict()
                             obj["value"] = dbu["id"]
