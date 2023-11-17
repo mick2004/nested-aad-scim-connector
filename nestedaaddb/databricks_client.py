@@ -54,6 +54,10 @@ class DatabricksClient:
 
     '''
     Add or remove users in Databricks group
+    members : all the users/group that should be in the final state of the group.This is retrieved from Azure AAD
+    dbg : databricks group with id and membership
+    dbus: all databricks users
+    dbgroups : all databricks groups
     '''
 
     def patch_dbgroup(self, gid, members, dbg, dbus, dbgroups, dryrun):
@@ -82,6 +86,10 @@ class DatabricksClient:
 
                         print("1.dbm is ")
                         print(dbmember)
+                        #Note that dbmember response is coming from databricks group api calls which gives members
+                        #it does not have member email-only display
+                        # it display anme of user in AAD and Databricks must match
+                        #even if not matched it will just be added to the to add list
                         if (member["type"] == "user" and member["data"][0].casefold() == dbmember["display"].casefold()) \
                                 or (member["type"] == "group" and member["data"].casefold() == dbmember[
                             "display"].casefold()):
@@ -131,8 +139,7 @@ class DatabricksClient:
                 # check if it's a user
                 if member["type"] == "user":
                     for dbu in dbus["Resources"]:
-                        if dbu.get("displayName", "").casefold() == member["data"][0].casefold() and dbu[
-                            "userName"].casefold() == member["data"][1].casefold():
+                        if dbu["userName"].casefold() == member["data"][1].casefold():
                             obj = dict()
                             obj["value"] = dbu["id"]
                             mem.append(obj)

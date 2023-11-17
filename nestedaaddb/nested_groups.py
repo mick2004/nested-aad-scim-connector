@@ -9,6 +9,10 @@ from collections import defaultdict
 class SyncNestedGroups:
     '''
     Dictionaries used for extracting and reusing user and group mappings(Including nestedAAD groups) in AAD
+    This utility requires the display name of databricks user exactly same as AAD name
+    This is becuase Databricks Groups API gives display name and that is compared with AAD displayname in case of users
+    If you have different display names in AAD vs Databricks,you can delete the user from databricks
+    this program will recreate them
     '''
 
     groupgp = defaultdict(set)
@@ -84,6 +88,8 @@ class SyncNestedGroups:
 
             '''
             Create Users and groups in Databricks as required
+            This is retrieved from AAD
+            
             '''
             for u in distinct_usersU:
 
@@ -94,8 +100,7 @@ class SyncNestedGroups:
                 print(u)
 
                 for udb in dbusers["Resources"]:
-                    if u[0].casefold() == udb.get("displayName", "").casefold() and u[1].casefold() == udb[
-                        "userName"].casefold():
+                    if u[1].casefold() == udb["userName"].casefold():
                         exists = True;
 
                 if not exists:
@@ -118,6 +123,9 @@ class SyncNestedGroups:
 
             '''
             Create groups or update membership of groups i.e. add/remove users from groups
+            distinct_groupsU : distinct groups to be added as part of this operation
+            we are comparing it with  databricks all groups to retrive gid
+            which will be used to make databricks rest api calls
             '''
             for u in distinct_groupsU:
                 exists = False
@@ -125,5 +133,10 @@ class SyncNestedGroups:
                     if u.casefold() == dbg.get("displayName", "").casefold():
                         exists = True
                         # compare and add remove the members as needed
+                        # groupgpU : dsitinct users per group.This is retrieved from Azure AAD
+                        # we are getting all the users that should be in the final state of the group
+                        # dbg : databricks group with id
+                        # dbusers : all databricks users
+                        # dbgroups : all databricks groups
                         self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
         print("All Operation completed !")
