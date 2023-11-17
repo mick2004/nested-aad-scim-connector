@@ -48,7 +48,10 @@ class SyncNestedGroups:
         dbusers = self.dbclient.get_dbusers()
         dbgroups = self.dbclient.get_dbgroups()
 
-        print("1.All Databricks Users Read")
+        print("1.All Databricks Users and group Read")
+
+        print("1.1 Number of Users in databricks is :"+str(len(dbusers)))
+        print("1.1 Number of groups in databricks is :" + str(len(dbgroups["Resources"])))
 
         print("2.Top level group requested is " + toplevelgroup)
 

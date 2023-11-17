@@ -31,7 +31,7 @@ class DatabricksClient:
 
         api_url = self.dbbaseUrl + "/Users"
         start_index=1
-        count=10000
+        count=1000
 
         while True:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
