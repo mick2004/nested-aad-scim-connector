@@ -198,24 +198,24 @@ class SyncNestedGroups:
 
         if colInitialised:
             # Full Count of the collections
-            print("\n=== Full Analysis Summary for children partent groups ===>" + toplevelgroup)
+            print("\n=== Full Analysis Summary for children for  parent group ===>" + toplevelgroup)
 
             # Distinct Groups Summary
             print(f"5. Total Number of Distinct Groups: {len(distinct_groupsU)}")
-            print("5.1 Top 5 Distinct Groups:")
-            for group_name in list(distinct_groupsU)[:5]:
+            print("5.1 Distinct Groups for  parent group ===>" + toplevelgroup)
+            for group_name in list(distinct_groupsU):
                 print(f"   - {group_name}")
 
             # Distinct Users Summary
             print(f"\n6. Total Number of Distinct Users: {len(distinct_usersU)}")
-            print("6.1 Top 5 Distinct Users:")
-            for user in list(distinct_usersU)[:5]:
+            print("6.1 Distinct Users for  parent group ===>" + toplevelgroup)
+            for user in list(distinct_usersU):
                 print(f"   - Display Name: {user[0]}, User Principal Name: {user[1]}")
 
             # Group Members Mapping Summary
             print(f"\n7. Total Number of Groups in Group-User Map: {len(groupgpU)}")
-            print("7.1 Top 5 Group-User Mappings:")
-            for group_name, members in list(groupgpU.items())[:5]:
+            print("7.1 Group-User Mappings for  parent group ===>" + toplevelgroup)
+            for group_name, members in list(groupgpU.items()):
                 print(f"   - Group: {group_name}, Members: {list(members)[:5]}")
 
         print("\nAnalysis completed!")
