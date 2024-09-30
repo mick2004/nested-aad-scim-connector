@@ -91,15 +91,18 @@ class Graph:
         self.ensure_graph_for_app_only_auth()
 
         endpoint = '/groups'
-        # Only request specific properties
         select = 'displayName,id'
-
-        # Sort by display name
         order_by = 'displayName'
         request_url = f'{endpoint}?$select={select}&$orderBy={order_by}'
 
-        users_response = self.app_client.get(request_url)
-        return users_response.json()
+        all_groups = []
+        while request_url:
+            response = self.app_client.get(request_url)
+            response_json = response.json()
+            all_groups.extend(response_json.get('value', []))
+            request_url = response_json.get('@odata.nextLink', None)
+
+        return all_groups
 
     '''
     Get all the group members from the group

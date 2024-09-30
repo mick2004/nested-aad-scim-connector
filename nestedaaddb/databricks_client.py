@@ -190,7 +190,7 @@ class DatabricksClient:
                             break
                 # or if it is a group
                 elif member["type"] == "group":
-                    for dbgg in dbgroups["Resources"]:
+                    for dbgg in dbgroups:
                         if dbgg.get("displayName", "").casefold() == member["data"].casefold():
                             obj = dict()
                             obj["value"] = dbgg["id"]
@@ -225,11 +225,33 @@ class DatabricksClient:
     '''
 
     def get_dbgroups(self):
-        api_url = self.dbbaseUrl + "/Groups"
+        all_groups = []
 
-        my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
-        response = requests.get(api_url, headers=my_headers).text
-        return json.loads(response)
+        api_url = self.dbbaseUrl + "/Groups"
+        start_index = 1
+        count = 10000
+
+        while True:
+            my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
+            params = {
+                'startIndex': start_index,
+                'count': count
+            }
+
+            response = requests.get(api_url, headers=my_headers, params=params).text
+            groups_data = json.loads(response)
+
+            # Extract groups from the current page and add them to the list
+            if 'Resources' in groups_data:
+                all_groups.extend(groups_data['Resources'])
+
+            # Check if there are more groups to fetch
+            if 'totalResults' in groups_data and len(all_groups) >= groups_data['totalResults']:
+                break
+
+            start_index += count  # Increment the startIndex for the next request
+
+        return all_groups
 
     '''Get User '''
     def get_useremail_by_id(self,uid):
