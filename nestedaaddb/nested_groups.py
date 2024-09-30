@@ -98,9 +98,9 @@ class SyncNestedGroups:
 
                 exists = False
 
-                print("----0m----users identified to be present in groups selected")
+                #print("----0m----users identified to be present in groups selected")
 
-                print(u)
+                #print(u)
 
                 for udb in dbusers:
                     if u[1].casefold() == udb["userName"].casefold():
@@ -124,6 +124,9 @@ class SyncNestedGroups:
             dbusers = self.dbclient.get_dbusers()
             dbgroups = self.dbclient.get_dbgroups()
 
+            # UserName lookup by id databricks
+            userName_lookup_by_id_db = {user['id']: user['userName'] for user in dbusers}
+
             '''
             Create groups or update membership of groups i.e. add/remove users from groups
             distinct_groupsU : distinct groups to be added as part of this operation
@@ -141,5 +144,5 @@ class SyncNestedGroups:
                         # dbg : databricks group with id
                         # dbusers : all databricks users
                         # dbgroups : all databricks groups
-                        self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups, dryrun)
+                        self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups,userName_lookup_by_id_db, dryrun)
         print("All Operation completed !")
