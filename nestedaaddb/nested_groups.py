@@ -4,6 +4,7 @@ import configparser
 from nestedaaddb.graph_client import Graph
 from nestedaaddb.databricks_client import DatabricksClient
 from collections import defaultdict
+import csv
 
 
 class SyncNestedGroups:
@@ -197,27 +198,48 @@ class SyncNestedGroups:
         print("4. Hierarchy analysed")
 
         if colInitialised:
-            # Full Count of the collections
-            print("\n=== Full Analysis Summary for children for  parent group ===>" + toplevelgroup)
+            # Save distinct groups to CSV
+            with open('distinct_groups.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Group Name"])
+                for group_name in distinct_groupsU:
+                    writer.writerow([group_name])
+            print("Distinct groups saved to distinct_groups.csv")
+
+            # Save distinct users to CSV
+            with open('distinct_users.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Display Name", "User Principal Name"])
+                for user in distinct_usersU:
+                    writer.writerow([user[0], user[1]])
+            print("Distinct users saved to distinct_users.csv")
+
+            # Save group-user mappings to CSV
+            # Save group-user mappings to CSV
+            # Save group-user mappings to CSV
+            with open('group_user_mappings.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Group Name", "Members"])
+                for group_name, members in groupgpU.items():
+                    # Converting each member to a string
+                    members_str = "; ".join([str(member) for member in list(members)])
+                    writer.writerow([group_name, members_str])
+            print("Group-user mappings saved to group_user_mappings.csv")
 
             # Distinct Groups Summary
             print(f"5. Total Number of Distinct Groups: {len(distinct_groupsU)}")
-            print("5.1 Distinct Groups for  parent group ===>" + toplevelgroup)
+            print("5.1 Distinct Groups for parent group ===>" + toplevelgroup)
             for group_name in list(distinct_groupsU):
                 print(f"   - {group_name}")
 
             # Distinct Users Summary
             print(f"\n6. Total Number of Distinct Users: {len(distinct_usersU)}")
-            print("6.1 Distinct Users for  parent group ===>" + toplevelgroup)
+            print("6.1 Distinct Users for parent group ===>" + toplevelgroup)
             for user in list(distinct_usersU):
                 print(f"   - Display Name: {user[0]}, User Principal Name: {user[1]}")
 
             # Group Members Mapping Summary
             print(f"\n7. Total Number of Groups in Group-User Map: {len(groupgpU)}")
-            print("7.1 Group-User Mappings for  parent group ===>" + toplevelgroup)
+            print("7.1 Group-User Mappings for parent group ===>" + toplevelgroup)
             for group_name, members in list(groupgpU.items()):
-                print(f"   - Group: {group_name}, Members: {list(members)[:5]}")
-
-        print("\nAnalysis completed!")
-
-
+                print(f"   - Group: {group_name}, Members: {list(members)}")
