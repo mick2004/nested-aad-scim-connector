@@ -111,16 +111,18 @@ class Graph:
     def get_groupmembers(self, gid):
         self.ensure_graph_for_app_only_auth()
 
-        endpoint = '/groups'
-        # Only request specific properties
+        endpoint = f'/groups/{gid}/members'
         select = 'displayName,id,userPrincipalName'
+        request_url = f'{endpoint}?$select={select}'
 
-        # Sort by display name
-        order_by = 'displayName'
-        request_url = f'{endpoint}/{gid}/members?$select={select}'
+        all_members = []
+        while request_url:
+            response = self.app_client.get(request_url)
+            response_json = response.json()
+            all_members.extend(response_json.get('value', []))
+            request_url = response_json.get('@odata.nextLink', None)
 
-        users_response = self.app_client.get(request_url)
-        return users_response.json()
+        return {'value': all_members}
 
     '''
     Extract the user and group mapping .
