@@ -22,11 +22,7 @@ class DatabricksClient:
 
     def get_dbusers(self):
 
-        # api_url = self.dbbaseUrl + "/Users"
-        #
-        # my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
-        # response = requests.get(api_url, headers=my_headers).text
-        # return json.loads(response)
+
         all_users = []
 
         api_url = self.dbbaseUrl + "/Users"
@@ -118,11 +114,6 @@ class DatabricksClient:
                         check if user or group exists
                         '''
 
-                        #print("1.dbm is ")
-                        #print(dbmember)
-                        #Note that dbmember response is coming from databricks group api calls which gives members
-                        #it does not have member email-only display
-                        # Using dict to get username from userid which is returned by databricks
 
                         if(member["type"] == "user"):
                             username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
@@ -135,44 +126,33 @@ class DatabricksClient:
                 if not exists:
                     print("-----3m")
                     print(member)
-                    if (member["type"] == "user"):
-                        username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                        print(f"Databricks UserName added toadd list is {username} in group : {dbg['displayName']}")
                     toadd.append(member)
 
         if "members" in dbg:
             for dbmember in dbg["members"]:
                 exists = False
-                for member in members:
-                    if (member["type"] == "user"):
-                        username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                        if member["data"][1].casefold() == username:
+
+                if members is not None:
+                    for member in members:
+                        if (member["type"] == "user"):
+                            username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
+                            if member["data"][1].casefold() == username:
+                                exists = True
+                                break
+                        if member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold():
                             exists = True
                             break
-                    if member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold():
-                        exists = True
-                        break
                 if not exists:
                     toremove.append(dbmember)
-                    if (member["type"] == "user"):
-                        username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                        print(f"Databricks UserName added toremove list is {username} in group : {dbg['displayName']}")
 
         ops = []
 
-        print("Inside patchop")
-        # print("Existing group members :")
-        # print(dbg["members"])
-        # print("Final list should be :")
-        # print(members)
-        # print("To add ")
-        # print(toadd)
-        # print("To remove ")
-        # print(toremove)
 
         if len(toadd) == 0 and len(toremove) == 0:
+            print(f"----No change in membership detected for group id {gid} -----")
             return
 
+        print(f"----Change in membership detected for group id {gid}.Doing Sync for it -----")
         if len(toadd) > 0:
             mem = []
             for member in toadd:
