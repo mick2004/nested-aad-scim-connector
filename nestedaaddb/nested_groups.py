@@ -191,7 +191,6 @@ class SyncNestedGroups:
         if not response:
             print("Error: Received empty response for group lookup.")
             print("Response for group was:", response)  # This helps verify if the data is valid JSON or not.
-
             return
 
         try:
