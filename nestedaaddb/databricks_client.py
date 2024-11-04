@@ -1,5 +1,6 @@
 import json
 import requests
+from logger_config import logger
 
 '''
 Databricks client to interact with Databricks SCIM API's
@@ -74,10 +75,10 @@ class DatabricksClient:
 
         if not dryrun:
             response = requests.post(api_url, data=json.dumps(u), headers=my_headers)
-            print("User created " + str(user[0]))
-            print("Response was :" + response.text)
+            logger.info("User created " + str(user[0]))
+            logger.info("Response was :" + response.text)
         else:
-            print("User to be created " + str(user[0]))
+            logger.info("User to be created " + str(user[0]))
 
     '''
     Add or remove users in Databricks group
@@ -100,8 +101,8 @@ class DatabricksClient:
 
         if members is not None:
             for member in members:
-                #print("-----1m-----")
-                #print(member)
+                #logger.info("-----1m-----")
+                #logger.info(member)
                 exists = False
                 if "members" in dbg:
                     for dbmember in dbg["members"]:
@@ -124,8 +125,8 @@ class DatabricksClient:
                             exists = True
                             break
                 if not exists:
-                    print("-----3m")
-                    print(member)
+                    logger.info("-----3m")
+                    logger.info(member)
                     toadd.append(member)
 
         if "members" in dbg:
@@ -149,16 +150,16 @@ class DatabricksClient:
 
 
         if len(toadd) == 0 and len(toremove) == 0:
-            print(f"----No change in membership detected for group id {gid} -----")
+            logger.info(f"----No change in membership detected for group id {gid} -----")
             return
 
-        print(f"----Change in membership detected for group id {gid}.Doing Sync for it -----")
+        logger.info(f"----Change in membership detected for group id {gid}.Doing Sync for it -----")
         if len(toadd) > 0:
             mem = []
             for member in toadd:
 
-                print("----15m-----Going to add user in group-----")
-                print(member)
+                logger.info("----15m-----Going to add user in group-----")
+                logger.info(member)
 
                 # check if it's a user
                 if member["type"] == "user":
@@ -193,11 +194,11 @@ class DatabricksClient:
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         if not dryrun:
             response = requests.patch(api_url, data=ujson, headers=my_headers)
-            print("Group Existed but membership updated. Request was :" + ujson)
-            print("Response was :" + response.text)
+            logger.info("Group Existed but membership updated. Request was :" + ujson)
+            logger.info("Response was :" + response.text)
 
         else:
-            print("Group Exists but membership need to be updated for :"
+            logger.info("Group Exists but membership need to be updated for :"
                   + dbg.get("displayName", "NoNameExist") + ". Request details-> data " + ujson + ",EndPoint :" + api_url)
 
     '''
@@ -277,7 +278,7 @@ class DatabricksClient:
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         if not dryrun:
             response = requests.post(api_url, data=ujson, headers=my_headers)
-            print("Blank Group Created.Request was " + ujson)
-            print("Response was :" + response.text)
+            logger.info("Blank Group Created.Request was " + ujson)
+            logger.info("Response was :" + response.text)
         else:
-            print("Blank Group to be created :" + group)
+            logger.info("Blank Group to be created :" + group)

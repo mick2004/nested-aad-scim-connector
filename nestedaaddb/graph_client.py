@@ -1,8 +1,9 @@
 import json
-from collections import defaultdict
 from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential, ClientSecretCredential
 from msgraph.core import GraphClient
+from logger_config import logger
+
 
 '''
 A wrapper for Graph to interact with Graph API's
