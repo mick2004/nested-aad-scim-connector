@@ -1,4 +1,6 @@
 import configparser
+from json import JSONDecodeError
+
 from nestedaaddb.graph_client import Graph
 from logger_config import logger
 from nestedaaddb.databricks_client import DatabricksClient
@@ -57,7 +59,24 @@ class SyncNestedGroups:
 
         logger.info("2.Top level group requested is " + toplevelgroup)
 
-        group = self.graph.getGroupByName(toplevelgroup)
+        #group = self.graph.getGroupByName(toplevelgroup)
+        response = self.graph.getGroupByName(toplevelgroup)
+        if not response:
+            print("Error: Received empty response for group lookup.")
+            print("Response for group was:", response)  # This helps verify if the data is valid JSON or not.
+
+            return
+
+        try:
+            # Assuming response should be parsed as JSON
+            group = response.json() if isinstance(response, str) else response
+            if 'value' not in group or not group['value']:
+                print("Warning: 'value' key missing or empty in response:", group)
+                print("Response for group was:", response)  # This helps verify if the data is valid JSON or not.
+                return
+        except JSONDecodeError as e:
+            print(f"JSON Decode Error: {e}. Response content: {response}")
+            return
 
         if len(group["value"]) == 0:
             logger.info("Top level group not found,exiting...")
@@ -166,7 +185,24 @@ class SyncNestedGroups:
 
         logger.info("2. Top-level group requested is: " + toplevelgroup)
 
-        group = self.graph.getGroupByName(toplevelgroup)
+        #group = self.graph.getGroupByName(toplevelgroup)
+
+        response = self.graph.getGroupByName(toplevelgroup)
+        if not response:
+            print("Error: Received empty response for group lookup.")
+            print("Response for group was:", response)  # This helps verify if the data is valid JSON or not.
+            return
+
+        try:
+            # Assuming response should be parsed as JSON
+            group = response.json() if isinstance(response, str) else response
+            if 'value' not in group or not group['value']:
+                print("Warning: 'value' key missing or empty in response:", group)
+                print("Response for group was:", response)  # This helps verify if the data is valid JSON or not.
+                return
+        except JSONDecodeError as e:
+            print(f"JSON Decode Error: {e}. Response content: {response}")
+            return
 
         if len(group["value"]) == 0:
             logger.info("Top-level group not found, exiting...")
