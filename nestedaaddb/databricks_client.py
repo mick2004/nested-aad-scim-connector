@@ -211,7 +211,7 @@ class DatabricksClient:
         #api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
         api_url = self.dbbaseUrl + "/Groups"
         start_index = 1
-        count = 100
+        count = 10
 
         while True:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
