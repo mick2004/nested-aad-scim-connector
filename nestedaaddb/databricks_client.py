@@ -208,7 +208,8 @@ class DatabricksClient:
     def get_dbgroups(self):
         all_groups = []
 
-        api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
+        #api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
+        api_url = self.dbbaseUrl + "/Groups"
         start_index = 1
         count = 100
 
