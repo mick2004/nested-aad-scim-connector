@@ -160,6 +160,9 @@ class Graph:
             elif gm["@odata.type"] == "#microsoft.graph.group":
 
                 groupgp[displayname].add(HashableDict({'type': 'group', 'data': (gm["displayName"])}))
+                if gm["displayName"] in distinct_groups:
+                    logger.warn("Detected duplicate child group ,hence skipping.Group Name :"+str(gm["displayName"]))
+                    continue
                 distinct_groups.add(gm["displayName"])
                 graph.extract_children_from_group(graph, gm["id"], gm["displayName"], distinct_groups,
                                                   distinct_users, groupgp)
