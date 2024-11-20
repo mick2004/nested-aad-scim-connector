@@ -99,6 +99,23 @@ class DatabricksClient:
         toadd = []
         toremove = []
 
+        # Log all members before applying changes
+        # Safely log members
+        # Safely log members and group display name
+        # Safely log group display name and members
+        group_display_name = dbg.get("displayName", "NoNameExist")
+        dbg_members = dbg.get("members", [])  # Safely get members or default to an empty list
+
+        logger.info(f"Group ID: {gid}, Group Display Name: {group_display_name}")
+        logger.info(
+            f"Group Members as per Databricks: {json.dumps(dbg_members, indent=2)}")  # Convert to JSON for readability
+
+        if members is None:
+            logger.info(f"Group Members as per AAD: None")
+        else:
+            logger.info(
+                f"Group Members as per AAD: {json.dumps(list(members), indent=2)}")  # Ensure it's a list if needed
+
         if members is not None:
             for member in members:
                 #logger.info("-----1m-----")
@@ -130,17 +147,29 @@ class DatabricksClient:
                     toadd.append(member)
 
         if "members" in dbg:
+            logger.info("Members exist in Databricks for this group.Looping via each member in databricks and trying to find ones to remove from databricks.")
             for dbmember in dbg["members"]:
+                logger.info("-----4m")
                 exists = False
+                logger.info("Member in Databricks id =>" + str(dbmember["value"]))
+                logger.info("Member in Databricks display =>" + str(dbmember["display"]))
+                logger.info("Member in Databricks ref =>" + str(dbmember["$ref"]))
 
                 if members is not None:
+                    logger.info("-----5m")
                     for member in members:
-                        if (member["type"] == "user"):
+                        logger.info("-----6m")
+                        if member["type"] == "user":
+                            logger.info("-----7m")
                             username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
+                            logger.info("username is "+str(username))
+
                             if member["data"][1].casefold() == username:
+                                logger.info("-----8m")
                                 exists = True
                                 break
                         if member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold():
+                            logger.info("-----9m")
                             exists = True
                             break
                 if not exists:
@@ -148,6 +177,10 @@ class DatabricksClient:
 
         ops = []
 
+
+
+        logger.info(f"To Add: {json.dumps(list(toadd), indent=2)}")  # Ensure sets are converted to lists
+        logger.info(f"To Remove: {json.dumps(list(toremove), indent=2)}")  # Ensure sets are converted to lists
 
         if len(toadd) == 0 and len(toremove) == 0:
             logger.info(f"----No change in membership detected for group id {gid} -----")
