@@ -17,18 +17,39 @@ class DatabricksClient:
         self.dbbaseUrl = self.settings['dbbaseUrl']
         self.dbscimToken = self.settings['dbscimToken']
 
+    ''' Get membership of a databricks group'''
+
+    def get_group_members(self, group_id):
+        """
+        Retrieve members of a specific group by group ID.
+        """
+        api_url = f"{self.dbbaseUrl}/Groups/{group_id}"
+        my_headers = {'Authorization': f'Bearer {self.dbscimToken}'}
+
+        try:
+            response = requests.get(api_url, headers=my_headers)
+            response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+            group_data = response.json()
+
+            # Extract and log members if available
+            members = group_data.get("members", [])
+            logger.info(f"Fetched Membership from Databricks-Group ID: {group_id}, Members: {json.dumps(members, indent=2)}")
+            return members
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to retrieve members for group ID {group_id}: {e}")
+            return []
+
     '''
     Get all the users on Databricks
     '''
 
     def get_dbusers(self):
 
-
         all_users = []
 
         api_url = self.dbbaseUrl + "/Users"
-        start_index=1
-        count=100
+        start_index = 1
+        count = 100
 
         while True:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
@@ -36,8 +57,6 @@ class DatabricksClient:
                 'startIndex': start_index,
                 'count': count
             }
-
-
 
             response = requests.get(api_url, headers=my_headers, params=params).text
             users_data = json.loads(response)
@@ -53,8 +72,6 @@ class DatabricksClient:
             start_index += count  # Increment the startIndex for the next request
 
         return all_users
-
-
 
     '''
     Create Databricks User
@@ -88,7 +105,10 @@ class DatabricksClient:
     dbgroups : all databricks groups
     '''
 
-    def patch_dbgroup(self, gid, members, dbg, dbus, dbgroups,userName_lookup_by_id_db, dryrun):
+    def patch_dbgroup(self, gid, members, dbg, dbus, dbgroups, userName_lookup_by_id_db, dryrun):
+        """
+        Add or remove users in a Databricks group.
+        """
         api_url = self.dbbaseUrl + "/Groups/" + gid
         u = {
             "schemas": [
@@ -99,102 +119,96 @@ class DatabricksClient:
         toadd = []
         toremove = []
 
-        # Log all members before applying changes
-        # Safely log members
-        # Safely log members and group display name
-        # Safely log group display name and members
+        # Fetch group display name
         group_display_name = dbg.get("displayName", "NoNameExist")
-        dbg_members = dbg.get("members", [])  # Safely get members or default to an empty list
+
+        # Fetch members dynamically using the SCIM API
+        dbg_members = self.get_group_members(gid)
 
         logger.info(f"Group ID: {gid}, Group Display Name: {group_display_name}")
-        logger.info(
-            f"Group Members as per Databricks: {json.dumps(dbg_members, indent=2)}")  # Convert to JSON for readability
+        logger.info(f"Group Members as per Databricks: {json.dumps(dbg_members, indent=2)}")
 
+        # Log members as per Azure AAD
         if members is None:
             logger.info(f"Group Members as per AAD: None")
         else:
-            logger.info(
-                f"Group Members as per AAD: {json.dumps(list(members), indent=2)}")  # Ensure it's a list if needed
+            logger.info(f"Group Members as per AAD: {json.dumps(list(members), indent=2)}")
 
+        # Logic to identify members to add
         if members is not None:
             for member in members:
-                #logger.info("-----1m-----")
-                #logger.info(member)
+                logger.info("-----1m-----")
+                logger.info(f"Checking member: {member}")
                 exists = False
-                if "members" in dbg:
-                    for dbmember in dbg["members"]:
-                        '''call to retrived user SPN'''
-
-
-                        '''
-                        If it is user we are storing both name and email
-                        If group we only store name
-                        check if user or group exists
-                        '''
-
-
-                        if(member["type"] == "user"):
-                            username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                            if member["data"][1].casefold() == username:
-                                exists = True
-                                break
-                        if member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold():
+                for dbmember in dbg_members:
+                    # Log member comparisons
+                    logger.info(f"Comparing with Databricks member: {dbmember}")
+                    if member["type"] == "user":
+                        username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
+                        if member["data"][1].casefold() == username:
+                            logger.info("-----2m----- Match found, user exists")
                             exists = True
                             break
+                    if member["type"] == "group" and member["data"].casefold() == dbmember.get("display",
+                                                                                               "").casefold():
+                        logger.info("-----2m----- Match found, group exists")
+                        exists = True
+                        break
                 if not exists:
-                    logger.info("-----3m")
+                    logger.info("-----3m----- Member not found, adding to 'toadd'")
                     logger.info(member)
                     toadd.append(member)
 
-        if "members" in dbg:
-            logger.info("Members exist in Databricks for this group.Looping via each member in databricks and trying to find ones to remove from databricks.")
-            for dbmember in dbg["members"]:
-                logger.info("-----4m")
-                exists = False
-                logger.info("Member in Databricks id =>" + str(dbmember["value"]))
-                logger.info("Member in Databricks display =>" + str(dbmember["display"]))
-                logger.info("Member in Databricks ref =>" + str(dbmember["$ref"]))
+        # Logic to identify members to remove
+        logger.info("Checking for members to remove in Databricks.")
+        for dbmember in dbg_members:
+            logger.info("-----4m-----")
+            exists = False
+            logger.info(f"Member in Databricks id => {dbmember['value']}")
+            logger.info(f"Member in Databricks display => {dbmember.get('display', '')}")
+            logger.info(f"Member in Databricks ref => {dbmember.get('$ref', '')}")
 
-                if members is not None:
-                    logger.info("-----5m")
-                    for member in members:
-                        logger.info("-----6m")
-                        if member["type"] == "user":
-                            logger.info("-----7m")
-                            username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                            logger.info("username is "+str(username))
-
-                            if member["data"][1].casefold() == username:
-                                logger.info("-----8m")
-                                exists = True
-                                break
-                        if member["type"] == "group" and member["data"].casefold() == dbmember["display"].casefold():
-                            logger.info("-----9m")
+            if members is not None:
+                logger.info("-----5m-----")
+                for member in members:
+                    logger.info(f"-----6m----- Checking AAD member: {member}")
+                    if member["type"] == "user":
+                        logger.info("-----7m----- Checking if user exists")
+                        username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
+                        logger.info(f"username is {username}")
+                        if member["data"][1].casefold() == username:
+                            logger.info("-----8m----- Match found, user exists")
                             exists = True
                             break
-                if not exists:
-                    toremove.append(dbmember)
+                    if member["type"] == "group" and member["data"].casefold() == dbmember.get("display",
+                                                                                               "").casefold():
+                        logger.info("-----9m----- Match found, group exists")
+                        exists = True
+                        break
+            if not exists:
+                logger.info("-----10m----- Member not found, adding to 'toremove'")
+                toremove.append(dbmember)
 
-        ops = []
+        # Log results of comparison
+        logger.info(f"To Add: {json.dumps(list(toadd), indent=2)}")
+        logger.info(f"To Remove: {json.dumps(list(toremove), indent=2)}")
 
-
-
-        logger.info(f"To Add: {json.dumps(list(toadd), indent=2)}")  # Ensure sets are converted to lists
-        logger.info(f"To Remove: {json.dumps(list(toremove), indent=2)}")  # Ensure sets are converted to lists
-
+        # No changes detected
         if len(toadd) == 0 and len(toremove) == 0:
-            logger.info(f"----No change in membership detected for group id {gid} -----")
+            logger.info(f"----No change in membership detected for group {group_display_name} (ID: {gid}) -----")
             return
 
-        logger.info(f"----Change in membership detected for group id {gid}.Doing Sync for it -----")
+        # Apply changes
+        logger.info(
+            f"----Change in membership detected for group {group_display_name} (ID: {gid}). Doing Sync for it -----")
+        ops = []
+
         if len(toadd) > 0:
             mem = []
             for member in toadd:
-
-                logger.info("----15m-----Going to add user in group-----")
+                logger.info("----15m----- Going to add user/group to group -----")
                 logger.info(member)
 
-                # check if it's a user
                 if member["type"] == "user":
                     for dbu in dbus:
                         if dbu["userName"].casefold() == member["data"][1].casefold():
@@ -202,7 +216,6 @@ class DatabricksClient:
                             obj["value"] = dbu["id"]
                             mem.append(obj)
                             break
-                # or if it is a group
                 elif member["type"] == "group":
                     for dbgg in dbgroups:
                         if dbgg.get("displayName", "").casefold() == member["data"].casefold():
@@ -210,41 +223,41 @@ class DatabricksClient:
                             obj["value"] = dbgg["id"]
                             mem.append(obj)
                             break
-
             dictmem = {"members": mem}
             dictsub = {'op': "add", 'value': dictmem}
             ops.append(dictsub)
 
         if len(toremove) > 0:
-
             for member in toremove:
-                dictsub = {'op': "remove", 'path': "members[value eq \"" + member["value"] + "\""}
+                dictsub = {'op': "remove", 'path': f"members[value eq \"{member['value']}\"]"}
                 ops.append(dictsub)
 
+        # Prepare and send API request
         gdata = json.loads(json.dumps(u))
         gdata["Operations"] = ops
         ujson = json.dumps(gdata)
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
         if not dryrun:
             response = requests.patch(api_url, data=ujson, headers=my_headers)
-            logger.info("Group Existed but membership updated. Request was :" + ujson)
-            logger.info("Response was :" + response.text)
-
+            logger.info(f"Group {group_display_name} (ID: {gid}) membership updated. Request was: {ujson}")
+            logger.info(f"Response was: {response.text}")
         else:
-            logger.info("Group Exists but membership need to be updated for :"
-                  + dbg.get("displayName", "NoNameExist") + ". Request details-> data " + ujson + ",EndPoint :" + api_url)
+            logger.info(
+                f"Group {group_display_name} (ID: {gid}) needs membership updates. "
+                f"Request details -> data {ujson}, EndPoint: {api_url}"
+            )
 
     '''
-    Get all Databricks groups
+    Get all  Databricks groups
     '''
 
     def get_dbgroups(self):
         all_groups = []
 
-        #api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
-        api_url = self.dbbaseUrl + "/Groups"
+        api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
+        # api_url = self.dbbaseUrl + "/Groups"
         start_index = 1
-        count = 10
+        count = 100
 
         while True:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
@@ -268,8 +281,9 @@ class DatabricksClient:
 
         return all_groups
 
-    '''Get User '''
-    def get_useremail_by_id(self,uid):
+    '''Get  User '''
+
+    def get_useremail_by_id(self, uid):
         api_url = self.dbbaseUrl + "/Groups"
 
         my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
