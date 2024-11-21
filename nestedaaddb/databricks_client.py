@@ -281,7 +281,7 @@ class DatabricksClient:
 
         return all_groups
 
-    '''Get User '''
+    '''Get  User '''
 
     def get_useremail_by_id(self, uid):
         api_url = self.dbbaseUrl + "/Groups"
