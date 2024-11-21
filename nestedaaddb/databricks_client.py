@@ -248,7 +248,7 @@ class DatabricksClient:
             )
 
     '''
-    Get all Databricks groups
+    Get all  Databricks groups
     '''
 
     def get_dbgroups(self):
