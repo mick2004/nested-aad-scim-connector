@@ -33,7 +33,7 @@ class DatabricksClient:
 
             # Extract and log members if available
             members = group_data.get("members", [])
-            logger.info(f"Fetched Membership from Databricks-Group ID: {group_id}, Members: {json.dumps(members, indent=2)}")
+            logger.debug(f"Fetched Membership from Databricks-Group ID: {group_id}, Members: {json.dumps(members, indent=2)}")
             return members
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to retrieve members for group ID {group_id}: {e}")
@@ -125,68 +125,68 @@ class DatabricksClient:
         # Fetch members dynamically using the SCIM API
         dbg_members = self.get_group_members(gid)
 
-        logger.info(f"Group ID: {gid}, Group Display Name: {group_display_name}")
-        logger.info(f"Group Members as per Databricks: {json.dumps(dbg_members, indent=2)}")
+        logger.debug(f"Group ID: {gid}, Group Display Name: {group_display_name}")
+        logger.debug(f"Group Members as per Databricks: {json.dumps(dbg_members, indent=2)}")
 
         # Log members as per Azure AAD
         if members is None:
-            logger.info(f"Group Members as per AAD: None")
+            logger.debug(f"Group Members as per AAD: None")
         else:
-            logger.info(f"Group Members as per AAD: {json.dumps(list(members), indent=2)}")
+            logger.debug(f"Group Members as per AAD: {json.dumps(list(members), indent=2)}")
 
         # Logic to identify members to add
         if members is not None:
             for member in members:
-                logger.info("-----1m-----")
-                logger.info(f"Checking member: {member}")
+                logger.debug("-----1m-----")
+                logger.debug(f"Checking member: {member}")
                 exists = False
                 for dbmember in dbg_members:
                     # Log member comparisons
-                    logger.info(f"Comparing with Databricks member: {dbmember}")
+                    logger.debug(f"Comparing with Databricks member: {dbmember}")
                     if member["type"] == "user":
                         username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
                         if member["data"][1].casefold() == username:
-                            logger.info("-----2m----- Match found, user exists")
+                            logger.debug("-----2m----- Match found, user exists")
                             exists = True
                             break
                     if member["type"] == "group" and member["data"].casefold() == dbmember.get("display",
                                                                                                "").casefold():
-                        logger.info("-----2m----- Match found, group exists")
+                        logger.debug("-----2m----- Match found, group exists")
                         exists = True
                         break
                 if not exists:
-                    logger.info("-----3m----- Member not found, adding to 'toadd'")
-                    logger.info(member)
+                    logger.debug("-----3m----- Member not found, adding to 'toadd'")
+                    logger.debug(member)
                     toadd.append(member)
 
         # Logic to identify members to remove
-        logger.info("Checking for members to remove in Databricks.")
+        logger.debug("Checking for members to remove in Databricks.")
         for dbmember in dbg_members:
-            logger.info("-----4m-----")
+            logger.debug("-----4m-----")
             exists = False
-            logger.info(f"Member in Databricks id => {dbmember['value']}")
-            logger.info(f"Member in Databricks display => {dbmember.get('display', '')}")
-            logger.info(f"Member in Databricks ref => {dbmember.get('$ref', '')}")
+            logger.debug(f"Member in Databricks id => {dbmember['value']}")
+            logger.debug(f"Member in Databricks display => {dbmember.get('display', '')}")
+            logger.debug(f"Member in Databricks ref => {dbmember.get('$ref', '')}")
 
             if members is not None:
-                logger.info("-----5m-----")
+                logger.debug("-----5m-----")
                 for member in members:
-                    logger.info(f"-----6m----- Checking AAD member: {member}")
+                    logger.debug(f"-----6m----- Checking AAD member: {member}")
                     if member["type"] == "user":
-                        logger.info("-----7m----- Checking if user exists")
+                        logger.debug("-----7m----- Checking if user exists")
                         username = userName_lookup_by_id_db.get(dbmember["value"], "NONE").casefold()
-                        logger.info(f"username is {username}")
+                        logger.debug(f"username is {username}")
                         if member["data"][1].casefold() == username:
-                            logger.info("-----8m----- Match found, user exists")
+                            logger.debug("-----8m----- Match found, user exists")
                             exists = True
                             break
                     if member["type"] == "group" and member["data"].casefold() == dbmember.get("display",
                                                                                                "").casefold():
-                        logger.info("-----9m----- Match found, group exists")
+                        logger.debug("-----9m----- Match found, group exists")
                         exists = True
                         break
             if not exists:
-                logger.info("-----10m----- Member not found, adding to 'toremove'")
+                logger.debug("-----10m----- Member not found, adding to 'toremove'")
                 toremove.append(dbmember)
 
         # Log results of comparison
