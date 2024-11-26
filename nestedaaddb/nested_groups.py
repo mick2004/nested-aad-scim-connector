@@ -76,7 +76,7 @@ class SyncNestedGroups:
                 return
         except JSONDecodeError as e:
             print(f"JSON Decode Error: {e}. Response content: {response}")
-            return
+            raise SystemExit("Terminating due to JSON Decode Error")
 
         if len(group["value"]) == 0:
             logger.info("Top level group not found,exiting...")
@@ -162,9 +162,11 @@ class SyncNestedGroups:
                         # compare and add remove the members as needed
                         # groupgpU : dsitinct users per group.This is retrieved from Azure AAD
                         # we are getting all the users that should be in the final state of the group
-                        # dbg : databricks group with id
+                        # dbg : databricks group with id with members
                         # dbusers : all databricks users
                         # dbgroups : all databricks groups
+
+
                         self.dbclient.patch_dbgroup(dbg["id"], groupgpU.get(u), dbg, dbusers, dbgroups,userName_lookup_by_id_db, dryrun)
         logger.info("All Operation completed !")
 
@@ -176,12 +178,12 @@ class SyncNestedGroups:
         '''
         Read All Databricks users and groups
         '''
-        dbusers = self.dbclient.get_dbusers()
-        dbgroups = self.dbclient.get_dbgroups()
+        #dbusers = self.dbclient.get_dbusers()
+        #dbgroups = self.dbclient.get_dbgroups()
 
-        logger.info("1. All Databricks Users and Groups Read")
-        logger.info("1.1 Number of Users in Databricks: " + str(len(dbusers)))
-        logger.info("1.2 Number of Groups in Databricks: " + str(len(dbgroups)))
+        #logger.info("1. All Databricks Users and Groups Read")
+        #logger.info("1.1 Number of Users in Databricks: " + str(len(dbusers)))
+        #logger.info("1.2 Number of Groups in Databricks: " + str(len(dbgroups)))
 
         logger.info("2. Top-level group requested is: " + toplevelgroup)
 
