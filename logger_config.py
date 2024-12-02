@@ -2,11 +2,18 @@ import logging
 import sys
 import os
 from logging.handlers import RotatingFileHandler
+from datetime import datetime
 
 # Configure the logger
 def setup_logger():
-    # Set log file to a relative path or Databricks-friendly path
-    log_file = os.path.join(os.getcwd(), "sync_nested_groups.log")  # Use current directory
+    # Create the logs directory if it doesn't exist
+    logs_dir = os.path.join(os.getcwd(), "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    # Set log file name with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d")  # Format as YYYYMMDD
+    log_file = os.path.join(logs_dir, f"sync_nested_groups_{timestamp}.log")
+
     logger = logging.getLogger("SyncNestedGroupsLogger")
     logger.setLevel(logging.INFO)  # Set overall logging level to INFO
 
@@ -36,3 +43,6 @@ def setup_logger():
 
 # Initialize and expose the logger globally
 logger = setup_logger()
+
+# Example usage
+logger.info("Logger setup complete. Logging started.")
