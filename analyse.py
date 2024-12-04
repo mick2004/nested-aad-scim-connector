@@ -20,7 +20,7 @@ try:
     sn.loadConfig("/Users/abhishekpratap.singh/Desktop/DesktopAsOf25Jan2024/nestedAADSynBakUp16Nov/config//config.cfg")  # Adjust path if necessary
     logger.info("Configuration loaded successfully.")
 
-    sn.analyse("Parent")
+    sn.analyse("<<Top level group>>")
     logger.info("Analysis completed successfully.")
 except Exception as e:
     logger.error(f"An error occurred: {e}")

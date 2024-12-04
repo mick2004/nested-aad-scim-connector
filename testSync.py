@@ -1,3 +1,4 @@
+import logging
 import sys
 import os
 from nestedaaddb.nested_groups import SyncNestedGroups
@@ -11,6 +12,7 @@ if config_dir not in sys.path:
 from logger_config import setup_logger
 
 logger = setup_logger()
+logger.setLevel(logging.WARN)
 
 # Create an instance of SyncNestedGroups
 sn = SyncNestedGroups()
@@ -20,7 +22,7 @@ try:
     sn.loadConfig("/Users/abhishekpratap.singh/Desktop/DesktopAsOf25Jan2024/nestedAADSynBakUp16Nov/config//config.cfg")  # Adjust path if necessary
     logger.info("Configuration loaded successfully.")
 
-    sn.sync("Parent",False)
+    sn.sync("<<Top level group>>",False)
     logger.info("Analysis completed successfully.")
 except Exception as e:
     logger.error(f"An error occurred: {e}")
