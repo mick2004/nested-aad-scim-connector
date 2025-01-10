@@ -2,7 +2,7 @@ import json
 from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential, ClientSecretCredential
 from msgraph.core import GraphClient
-from logger_config import logger
+from nestedaaddb.logger_config import logger
 
 
 '''
