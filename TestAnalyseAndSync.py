@@ -22,7 +22,7 @@ if config_dir not in sys.path:
     sys.path.append(config_dir)
 
 # Import and set up the logger
-from logger_config import setup_logger
+from nestedaaddb.logger_config import setup_logger
 logger = setup_logger()
 
 # Create an instance of SyncNestedGroups
@@ -59,7 +59,7 @@ if config_dir not in sys.path:
     sys.path.append(config_dir)
 
 # Import and set up the logger
-from logger_config import setup_logger
+from nestedaaddb.logger_config import setup_logger
 
 logger = setup_logger()
 

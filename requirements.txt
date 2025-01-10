@@ -1,2 +1,2 @@
-azure-identity
+azure-identity==1.15.0
 msgraph-core==0.2.2

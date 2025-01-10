@@ -2,7 +2,7 @@ import configparser
 from json import JSONDecodeError
 
 from nestedaaddb.graph_client import Graph
-from logger_config import logger
+from nestedaaddb.logger_config import logger, setup_logger
 from nestedaaddb.databricks_client import DatabricksClient
 from collections import defaultdict
 import csv
@@ -26,6 +26,8 @@ class SyncNestedGroups:
     graph: Graph
     dbclient: DatabricksClient
 
+
+
     def loadConfig(self, path):
         # logger.info(self)
         # logger.info(path)
@@ -48,6 +50,8 @@ class SyncNestedGroups:
         '''
         Read All Databricks users and groups
         '''
+        logger = setup_logger()
+        logger.info("Starting...")
         dbusers = self.dbclient.get_dbusers()
         dbgroups = self.dbclient.get_dbgroups()
 
@@ -184,7 +188,7 @@ class SyncNestedGroups:
         #logger.info("1. All Databricks Users and Groups Read")
         #logger.info("1.1 Number of Users in Databricks: " + str(len(dbusers)))
         #logger.info("1.2 Number of Groups in Databricks: " + str(len(dbgroups)))
-
+        logger = setup_logger()
         logger.info("2. Top-level group requested is: " + toplevelgroup)
 
         #group = self.graph.getGroupByName(toplevelgroup)

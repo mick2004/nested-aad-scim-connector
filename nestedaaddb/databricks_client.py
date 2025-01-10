@@ -1,6 +1,8 @@
 import json
+from time import sleep
+
 import requests
-from logger_config import logger
+from nestedaaddb.logger_config import logger
 
 '''
 Databricks client to interact with Databricks SCIM API's
@@ -44,32 +46,53 @@ class DatabricksClient:
     '''
 
     def get_dbusers(self):
-
         all_users = []
-
         api_url = self.dbbaseUrl + "/Users"
         start_index = 1
         count = 100
 
-        while True:
+        retry_count = 3  # Retry logic: try 3 times
+        max_attempts = 10  # Maximum number of total attempts to prevent infinite loop
+        attempt_counter = 0
+
+        while attempt_counter < max_attempts:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
             params = {
                 'startIndex': start_index,
                 'count': count
             }
 
-            response = requests.get(api_url, headers=my_headers, params=params).text
-            users_data = json.loads(response)
+            for attempt in range(retry_count):
+                try:
+                    response = requests.get(api_url, headers=my_headers, params=params).text
+                    users_data = json.loads(response)
 
-            # Extract users from the current page and add them to the list
-            if 'Resources' in users_data:
-                all_users.extend(users_data['Resources'])
+                    # Check for errors in the response
+                    if 'error_code' in users_data:
+                        sleep(1)
+                        continue
 
-            if 'totalResults' in users_data and len(all_users) >= users_data['totalResults']:
-                # If we have retrieved all users, break out of the loop
-                break
+                    # Extract users from the current page and add them to the list
+                    if 'Resources' in users_data and users_data['Resources']:
+                        all_users.extend(users_data['Resources'])
 
-            start_index += count  # Increment the startIndex for the next request
+                    # If we've retrieved all the users, return immediately
+                    if 'totalResults' in users_data and len(all_users) >= users_data['totalResults']:
+                        return all_users  # Exit function and return the users
+
+                    start_index += count  # Increment for next request
+                    break  # Exit retry loop if successful
+
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Attempt {attempt + 1} failed to retrieve users: {e}")
+                    if attempt + 1 == retry_count:  # If all attempts fail, raise the error
+                        raise
+                    sleep(2)  # Wait before retrying
+
+            attempt_counter += 1
+            if attempt_counter >= max_attempts:
+                logger.error("Maximum number of attempts reached. No data retrieved.")
+                break  # Exit the while loop if max attempts reached
 
         return all_users
 
@@ -253,31 +276,52 @@ class DatabricksClient:
 
     def get_dbgroups(self):
         all_groups = []
-
         api_url = self.dbbaseUrl + "/Groups?excludedAttributes=entitlements,members,roles,groups"
-        # api_url = self.dbbaseUrl + "/Groups"
         start_index = 1
         count = 100
 
-        while True:
+        retry_count = 3  # Retry logic: try 3 times
+        max_attempts = 10  # Maximum number of total attempts to prevent infinite loop
+        attempt_counter = 0
+
+        while attempt_counter < max_attempts:
             my_headers = {'Authorization': 'Bearer ' + self.dbscimToken}
             params = {
                 'startIndex': start_index,
                 'count': count
             }
 
-            response = requests.get(api_url, headers=my_headers, params=params).text
-            groups_data = json.loads(response)
+            for attempt in range(retry_count):
+                try:
+                    response = requests.get(api_url, headers=my_headers, params=params).text
+                    groups_data = json.loads(response)
 
-            # Extract groups from the current page and add them to the list
-            if 'Resources' in groups_data:
-                all_groups.extend(groups_data['Resources'])
+                    # Check for errors in the response
+                    if 'error_code' in groups_data:
+                        sleep(1)
+                        continue
 
-            # Check if there are more groups to fetch
-            if 'totalResults' in groups_data and len(all_groups) >= groups_data['totalResults']:
-                break
+                    # Extract groups from the current page and add them to the list
+                    if 'Resources' in groups_data and groups_data['Resources']:
+                        all_groups.extend(groups_data['Resources'])
 
-            start_index += count  # Increment the startIndex for the next request
+                    # If we've retrieved all the groups, return immediately
+                    if 'totalResults' in groups_data and len(all_groups) >= groups_data['totalResults']:
+                        return all_groups  # Exit function and return the groups
+
+                    start_index += count  # Increment for next request
+                    break  # Exit retry loop if successful
+
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Attempt {attempt + 1} failed to retrieve groups: {e}")
+                    if attempt + 1 == retry_count:  # If all attempts fail, raise the error
+                        raise
+                    sleep(2)  # Wait before retrying
+
+            attempt_counter += 1
+            if attempt_counter >= max_attempts:
+                logger.error("Maximum number of attempts reached. No data retrieved.")
+                break  # Exit the while loop if max attempts reached
 
         return all_groups
 
